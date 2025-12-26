@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [          //ts文件能被识别@别名 别动就这样 和原项目不同
-        "src/renderer/src/*"
+        "./src/renderer/src/*"
       ]
     }
   }
