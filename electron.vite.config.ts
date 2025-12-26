@@ -8,7 +8,7 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src')
+        '@': resolve('src/renderer/src') //vue文件能被识别@别名
       }
     },
     plugins: [vue()],

@@ -9,9 +9,11 @@
   ],
   "compilerOptions": {
     "composite": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "baseUrl": ".",
     "paths": {
-      "@renderer/*": [
+      "@/*": [          //ts文件能被识别@别名 别动就这样 和原项目不同
         "src/renderer/src/*"
       ]
     }
