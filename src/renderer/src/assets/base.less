@@ -1,0 +1,125 @@
+@import './scroll';
+@import './theme/mixin';
+
+.textOverflow (@line: 1) {
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @line;
+  overflow: hidden;
+}
+.bgSetting {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.v-field.v-field--center-affix {
+  border-radius: 8px;
+  .v-field__outline {
+    .v-field__outline__start {
+      //border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    .v-field__outline__end {
+      //border-color: #ffffff33 !important;
+    }
+  }
+}
+@font-face {
+  //font-family: PingFang;
+  //src: url('./font/苹方黑体-准-简.ttf');
+  //src: url('./font/苹方字体.ttf');
+}
+@text: rgb(210, 210, 210);
+@darkText: rgb(150, 150, 150);
+@moreDark: rgba(150, 150, 150, 0.6);
+@subject: rgb(236, 65, 65);
+@bgColor: rgb(19, 19, 26);
+
+.y-player-container::-webkit-scrollbar-thumb {
+  display: none;
+}
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+.el-loading-mask {
+  background: transparent;
+}
+#box {
+  display: flex;
+  height: calc(100%);
+}
+.main {
+  height: 100%;
+  width: calc(100% - 230px);
+  z-index: auto;
+  position: relative;
+}
+.body {
+  height: calc(100% - 60px);
+  padding-bottom: 130px;
+  overflow: hidden;
+  overflow-y: auto;
+  width: 100%;
+  display: flex;
+  align-content: baseline;
+  flex-direction: column;
+  .top {
+    margin-bottom: 20px;
+  }
+  .bottom {
+    //height: 80px;
+    //width: 100%;
+  }
+  .padding-container {
+    padding: 0 32px;
+    padding-bottom: 32px;
+  }
+}
+* {
+  //padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  //font-family: PingFang;
+  //font-weight: 600;
+}
+body.bold {
+  font-weight: 600;
+}
+html,
+body,
+#app {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: @text;
+  overflow: hidden;
+  //background: linear-gradient(rgb(113, 129, 130), @bgColor);
+  background-color: @bgColor;
+  //background-color: transparent;
+}
+img {
+  user-select: none;
+}
+#app {
+  //user-select: none;
+  position: relative;
+}
+// electron 无边框拖动窗口
+.window-container {
+  -webkit-app-region: drag;
+}
+//禁止拖拽（用于按钮、输入框等）
+.no-drag {
+  -webkit-app-region: no-drag !important;
+}
+
+.el-input__wrapper.is-focus {
+  //box-shadow: none;
+}
+.v-input--horizontal .v-input__append {
+  margin-inline-start: 6px;
+}
