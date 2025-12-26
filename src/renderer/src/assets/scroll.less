@@ -1,16 +1,22 @@
+﻿// 全局滚动条样式设置
 *::-webkit-scrollbar {
-  width: 6px;
-  height: 8px;
+  width: 6px; // 纵向滚动条宽度
+  height: 8px; // 横向滚动条高度
 }
 
+// 滚动条滑块样式
 *::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255, 0.08);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08); // 滑块颜色（半透明白色）
+  border-radius: 10px; // 滑块圆角
   visibility: visible;
 }
+
+// 鼠标悬停时显示滑块
 &:hover::-webkit-scrollbar-thumb {
   visibility: visible;
 }
+
+// 默认隐藏滑块（通常配合 hover 使用实现自动隐藏效果）
 &::-webkit-scrollbar-thumb {
   visibility: hidden;
 }
