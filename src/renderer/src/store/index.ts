@@ -40,7 +40,6 @@ export const useUserInfo = defineStore('userInfoId', {
       }
       type key = keyof typeof val
       for (const valKey in this.profile) {
-        // @ts-ignore
         this.profile[valKey as key] = val[valKey as key]
       }
       localStorage.setItem('userId', String(this.profile.userId))
