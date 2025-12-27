@@ -1,10 +1,21 @@
 {
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  // ==================== 新增配置：保存时自动格式化 ====================
+  // 启用保存文件时自动格式化，结合下面的语言配置使用 Prettier 来格式化代码
+  "editor.formatOnSave": true,
+
+  // ==================== 修改/新增配置：语言特定的格式化工具 ====================
+  // 设置 Vue 文件的默认格式化器为 Prettier
+  // 作用：保存时自动移除多余分号、统一引号等
+  "[vue]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // 设置 TypeScript 文件的默认格式化器为 Prettier
+  // 配合项目根目录的 .prettierrc.yaml 中的 "semi: false" 移除分号
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // 设置 JavaScript 文件的默认格式化器为 Prettier
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // 设置 JSON 文件的默认格式化器为 Prettier
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }

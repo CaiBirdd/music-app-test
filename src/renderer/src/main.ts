@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import router from './router'
 import pinia from '@/store/store'
 
+import './assets/iconfont/iconfont.css'
+import './assets/iconfont/iconfont.js'
+
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/dist/index.css'
 import ElementPlus from 'element-plus'

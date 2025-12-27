@@ -6,7 +6,7 @@
 
 /**
  * 声明 .vue 文件的模块定义
- * 使得 TypeScript 能够识别并导入 Vue 组件文件
+ * 使得 TypeScript 能够识别并导入 Vue 组件文件    这里有个小问题，这么设置后，即使导入不存在的组件也不会报错
  */
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
