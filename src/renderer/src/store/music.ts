@@ -25,7 +25,8 @@ interface State {
   lyric: any
   currentTime: 0
   lrcMode: 0 | 1
-  bgColor: Array<Array<string>>
+  // 原代码: bgColor: Array<Array<string>>
+  bgColor: string[]
   videoPlayUrl: string | null
   // 0心动 1列表循环 2随机播放 3单曲循环
   orderStatusVal: 0 | 1 | 2 | 3
@@ -203,8 +204,12 @@ export const useMusicAction = defineStore('musicActionId', () => {
     }
     playEnd()
   }
-  const updateBgColor = (colors: Array<Array<string>>) => {
-    state.bgColor = colors
+  // 原代码: const updateBgColor = (colors: Array<Array<string>>) => {
+  //   state.bgColor = colors
+  // }
+  const updateBgColor = (colors: Array<Array<number>>) => {
+    // 将 [89, 134, 167] 转换为 "89, 134, 167" 供 CSS v-bind 使用
+    state.bgColor = colors.map(color => color.join(', '))
   }
   // 获取心动歌曲列表  只支持我喜欢的列表 pid: 歌单id   id: 歌曲id
   const getIntelliganceListHandler = async () => {
