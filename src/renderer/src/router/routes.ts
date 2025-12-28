@@ -17,5 +17,10 @@ export default [
     path: '/daily-recommend',
     name: 'dailyRecommend',
     component: () => import('@/views/DailyRecommend/index.vue')
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('@/views/SearchList/index.vue')
   }
 ]

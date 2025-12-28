@@ -9,7 +9,7 @@
   "[vue]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
 
   // 设置 TypeScript 文件的默认格式化器为 Prettier
-  // 配合项目根目录的 .prettierrc.yaml 中的 "semi: false" 移除分号
+  // 原代码: "[typescript]": { "editor.defaultFormatter": "rvest.vs-code-prettier-eslint" },
   "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
 
   // 设置 JavaScript 文件的默认格式化器为 Prettier
