@@ -28,7 +28,7 @@ init()
 
 const playDetailList = (item: Recommend | typeof recommendSongs) => {
   // 类型保护
-  const id = (<Recommend>item).id || item
+  const id = (item as Recommend).id || item
   router.push(`/daily-recommend?id=${id}`)
 }
 </script>
@@ -37,26 +37,24 @@ const playDetailList = (item: Recommend | typeof recommendSongs) => {
   <div v-loading="state.loading" class="container">
     <SkeletonCard :loading="state.loading">
       <AreaBox>
-        <template v-slot:title>歌单</template>
+        <template #title>歌单</template>
         <Card
           :is-click="true"
-          @click="playDetailList(recommendSongs)"
           name="每日歌曲推荐"
           :pic-url="recommendImage"
+          @click="playDetailList(recommendSongs)"
         ></Card>
         <Card
           v-for="item in state.recommend"
+          :key="item.id"
           :is-click="true"
-          @click="playDetailList(item)"
           :name="item.name"
           :pic-url="item.picUrl"
+          @click="playDetailList(item)"
         ></Card>
       </AreaBox>
     </SkeletonCard>
   </div>
 </template>
 
-<style lang="less" scoped>
-.container {
-}
-</style>
+<style lang="less" scoped></style>

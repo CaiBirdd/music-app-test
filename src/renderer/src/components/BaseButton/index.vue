@@ -13,7 +13,7 @@ const emit = defineEmits(['click'])
 </script>
 
 <template>
-  <div @click="emit('click')" :class="['base-button', props.type]">
+  <div :class="['base-button', props.type]" @click="emit('click')">
     <slot></slot>
   </div>
 </template>

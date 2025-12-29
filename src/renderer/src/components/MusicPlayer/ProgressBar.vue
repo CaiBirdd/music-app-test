@@ -23,8 +23,8 @@ const model = computed<number>({
 
 <template>
   <div
-    :class="['base-progress-bar', flags.isOpenDetail ? 'detail-progress' : 'view-progress']"
     v-if="props.songs.ar"
+    :class="['base-progress-bar', flags.isOpenDetail ? 'detail-progress' : 'view-progress']"
     style="width: 100%"
   >
     <v-slider v-model="model"></v-slider>

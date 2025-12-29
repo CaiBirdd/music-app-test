@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// @ts-nocheck
-import { ref, onMounted, reactive, UnwrapRef, watch } from 'vue'
+import { ref, onMounted, reactive, UnwrapRef } from 'vue'
 import { useUserInfo } from '@/store'
 import { useMusicAction } from '@/store/music'
 import ProgressBar from '@/components/MusicPlayer/ProgressBar.vue'
@@ -12,7 +11,6 @@ import { ListenerName, useListener } from '@/components/MusicPlayer/listener'
 import usePlayList, { playListState } from '@/layout/BaseAside/usePlayList'
 import '@lrc-player/core/dist/style.css'
 import Player from '@lrc-player/core'
-import { useFlags } from '@/store/flags'
 
 const orderStatus = ['icon-xihuan5', 'icon-xunhuan', 'icon-suijibofang', 'icon-danquxunhuan']
 type userAudio = {
@@ -43,14 +41,13 @@ const emit = defineEmits(['playEnd', 'cutSong'])
 const isPlay = ref(false)
 const audio = ref<userAudio>()
 const music = useMusicAction()
-const flags = useFlags()
 const transitionIsPlay = ref(false)
-const { addListener, executeListener, pauseSomethingListener } = useListener(audio)
+const { addListener, executeListener } = useListener(audio)
 const { getPlayListDetailFn } = usePlayList()
 const player = new Player({
   click
 })
-function click(time: number, index: number) {
+function click(time: number) {
   audio.value!.currentTime = time
 }
 function seeked() {
@@ -60,17 +57,18 @@ let originPlay: HTMLMediaElement['play']
 let originPause: HTMLMediaElement['pause']
 
 onMounted(() => {
-  player.mount(document.querySelector('.lyric-container') as HTMLDivElement, audio.value)
+  player.mount(document.querySelector('.lyric-container') as HTMLDivElement, audio.value as any)
   originPlay = audio.value!.play as HTMLMediaElement['play']
   originPause = audio.value!.pause as HTMLMediaElement['pause']
   // 播放，音量过渡提高
-  audio.value!.play = play
+  audio.value!.play = play as any
   // 音量过渡减少为0，然后暂停
-  audio.value!.pause = pause
+  audio.value!.pause = pause as any
 
   audio.value?.addEventListener('error', (event: any) => {
     // console.log('event.target.error', event.target.error)
     if (event.target.error.code === 4) {
+      //
     }
   })
 })
@@ -105,7 +103,8 @@ function pause(isNeed: boolean = true, lengthen: boolean = false) {
     transitionIsPlay.value = false
   })
 }
-let timer: NodeJS.Timer
+let timer: NodeJS.Timeout
+//NodeJS.Timer 是旧的类型名称，在较新的 Node.js 类型定义中已经被 NodeJS.Timeout 替代
 // 当过渡完成时会返回Promise
 function transitionVolume(
   volume: number,
@@ -150,7 +149,7 @@ const timeupdate = () => {
   // 在更新 currentTime 之前，保存旧的值
   timeState.previousTime = music.state.currentTime
   if (window.$audio) {
-    music.state.currentTime = window.$audio.time
+    music.state.currentTime = window.$audio.time as any
   }
 }
 
@@ -172,7 +171,7 @@ const setOrderHandler = () => {
 
   // 如果上一次是心动模式并且当前播放的列表是”我喜欢的“，这次切换为其他，则重新获取”我喜欢的“列表,并更新进行时列表
   if (runtimeList?.specialType === 5 && music.state.orderStatusVal === 0 && newValue !== 0) {
-    getPlayListDetailFn(runtimeList.id, '', false)
+    getPlayListDetailFn(runtimeList.id as number, '', false)
     music.updateTracks(
       playListState.playList,
       playListState.playList.map((item) => item.id)
@@ -228,25 +227,29 @@ defineExpose(exposeObj)
 <template>
   <div class="bottom-container">
     <audio
-      @timeupdate="timeupdate"
-      @ended="end"
-      @seeked="seeked"
       ref="audio"
       class="plyr-audio"
       :src="props.src"
       preload="auto"
+      @timeupdate="timeupdate"
+      @ended="end"
+      @seeked="seeked"
     />
     <DetailLeft :songs="props.songs" />
     <DetailCenter
-      :orderStatus="orderStatus"
-      :isPlay="isPlay"
-      :orderStatusVal="music.state.orderStatusVal"
+      :order-status="orderStatus"
+      :is-play="isPlay"
+      :order-status-val="music.state.orderStatusVal"
       @play="play"
       @pause="pause"
-      @cutSong="(val) => emit('cutSong', val)"
-      @setOrderHandler="setOrderHandler"
+      @cut-song="(val) => emit('cutSong', val)"
+      @set-order-handler="setOrderHandler"
     />
-    <DetailRight :currentTime="music.state.currentTime" :songs="props.songs" :audio="audio" />
+    <DetailRight
+      :current-time="music.state.currentTime"
+      :songs="props.songs"
+      :audio="audio as any"
+    />
   </div>
   <div class="plan-container">
     <ProgressBar :songs="props.songs" />

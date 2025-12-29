@@ -19,9 +19,9 @@ const clickHandler = () => {
 <template>
   <div class="card-box">
     <div
-      @click="clickHandler"
       :style="{ backgroundImage: `url(${props.picUrl}?param=400y400` }"
       :class="['card', { 'card-click': isClick }]"
+      @click="clickHandler"
     >
       <slot></slot>
       <div v-if="isStartIcon" class="start-icon-box">

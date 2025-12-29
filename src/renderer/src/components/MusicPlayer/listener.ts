@@ -1,4 +1,3 @@
-// @ts-nocheck
 //作用：给音频元素绑定事件，并提供一个简单的事件注册与触发系统
 //事件总线，让你能在不同地方监听和响应音频播放事件。
 import { onMounted } from 'vue'
@@ -23,20 +22,20 @@ export const useListener = (audio: any) => {
     audio.value.addEventListener('loadedmetadata', onFirstLoad)
   })
 
-  const listenerObj = {
+  const listenerObj: any = {
     changeSong: [], // 歌曲切换
     handleFirstLoad: [], //  首次设置src，进行初始化操作
     cutSong: []
   }
-  const tempListener = {
+  const tempListener: any = {
     changeSong: [], // 歌曲切换
     handleFirstLoad: [], //  首次设置src，进行初始化操作
     cutSong: []
   }
 
-  const addListener = (listener: ListenerName, cb) => {
-    listenerObj[listener].push(cb)
-    tempListener[listener].push(cb)
+  const addListener = (listener: ListenerName, cb: any) => {
+    ;(listenerObj[listener] as any[]).push(cb)
+    ;(tempListener[listener] as any[]).push(cb)
   }
   const executeListener = (listener: ListenerName) => {
     const len = listenerObj[listener].length
@@ -44,12 +43,12 @@ export const useListener = (audio: any) => {
       return
     }
     for (let i = 0; i < len; i++) {
-      listenerObj[listener][i]()
+      ;(listenerObj[listener][i] as any)()
     }
   }
   const pauseSomethingListener = (listener: ListenerName) => {
     // 为防止多次清除数据导致的temp没有数据
-    if (listenerObj[listener].length > 0) {
+    if ((listenerObj[listener] as any[]).length > 0) {
       tempListener[listener] = listenerObj[listener]
       listenerObj[listener] = []
     }

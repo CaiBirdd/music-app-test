@@ -94,14 +94,15 @@ watch(
     <span class="keyword"
       >{{ route.query.key }}<span class="keyword-text">的相关搜索如下</span>
     </span>
-    <AreaBox @title-click="">
-      <template v-slot:title>歌单</template>
+    <AreaBox @title-click="titleClick">
+      <template #title>歌单</template>
       <Card
         v-for="item in state.songList.playlists"
+        :key="item.id"
         :is-click="true"
-        @click="gotoSongList(item)"
         :name="item.name"
         :pic-url="item.coverImgUrl"
+        @click="gotoSongList(item)"
       ></Card>
       <!--      <div @click="gotoSongList(item)" v-for="item in state.songList.playlists" class="card">-->
       <!--        <div class="img-box">-->
@@ -113,12 +114,10 @@ watch(
     </AreaBox>
 
     <AreaBox :is-move="false">
-      <template v-slot:title>单曲</template>
+      <template #title>单曲</template>
     </AreaBox>
   </div>
   <SongList
-    @current-change="currentChange"
-    @play="music.getMusicUrlHandler"
     is-loading-endflyback
     :loading="loading"
     :columns="columns"
@@ -129,6 +128,8 @@ watch(
     :page-size="limit"
     :current-page="page"
     :is-search="false"
+    @current-change="currentChange"
+    @play="music.getMusicUrlHandler"
   ></SongList>
   <!--  <tabs v-model="activeName">-->
   <!--    <tab-pane-->

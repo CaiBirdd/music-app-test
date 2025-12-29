@@ -1,20 +1,17 @@
 <!-- 显示当前播放项（歌单/专辑）的信息卡片，
  包括封面背景、播放量、名称、作者、创建时间、简介和若干操作按钮（播放全部、收藏、下载全部） -->
 <script setup lang="ts">
-// @ts-nocheck
+import { useRouter } from 'vue-router'
 import { formatDate, formatNumberToMillion, toggleImg } from '@/utils'
 import { useMusicAction } from '@/store/music'
-import { useUserInfo } from '@/store'
 import { ref, watch } from 'vue'
 import { useTheme } from '@/store/theme'
-import { useRoute, useRouter } from 'vue-router'
 
 const music = useMusicAction()
-const store = useUserInfo()
+
 const left = ref<HTMLDivElement>()
 const theme = useTheme()
 const router = useRouter()
-const route = useRoute()
 
 watch(
   () => music.state.currentItem?.coverImgUrl,
@@ -36,9 +33,9 @@ watch(
 
 const gotoUserDetail = () => {
   router.push({
-    path: '/detail',
+    path: '/user-detail',
     query: {
-      uid: music.state.currentItem.userId
+      uid: music.state.currentItem?.userId
     }
   })
 }
@@ -49,7 +46,9 @@ const gotoUserDetail = () => {
   <div v-if="music.state.currentItem?.coverImgUrl" class="list-info">
     <div>
       <div ref="left" class="left">
-        <span class="count">{{ formatNumberToMillion(music.state.currentItem?.playCount) }}</span>
+        <span class="count">
+          {{ formatNumberToMillion(music.state.currentItem?.playCount || 0) }}
+        </span>
       </div>
     </div>
 
@@ -60,18 +59,18 @@ const gotoUserDetail = () => {
       </div>
       <div class="song-info">
         <div
-          :style="{ backgroundImage: `url(${music.state.currentItem.creator.avatarUrl})` }"
+          :style="{ backgroundImage: `url(${music.state.currentItem?.creator?.avatarUrl})` }"
           class="avatar"
         ></div>
-        <div @click="gotoUserDetail" class="nickname">
-          {{ music.state.currentItem?.creator.nickname }}
+        <div class="nickname" @click="gotoUserDetail">
+          {{ music.state.currentItem?.creator?.nickname }}
         </div>
         <div class="create-timer">
-          {{ formatDate(music.state.currentItem?.createTime, 'YY-MM-DD hh:mm:ss') }}创建
+          {{ formatDate(music.state.currentItem?.createTime || 0, 'YY-MM-DD hh:mm:ss') }}创建
         </div>
       </div>
-      <span v-if="music.state.currentItem?.description" class="text-info-desc">
-        {{ music.state.currentItem?.description }}
+      <span v-if="(music.state.currentItem as any)?.description" class="text-info-desc">
+        {{ (music.state.currentItem as any)?.description }}
       </span>
 
       <div class="song-handle">

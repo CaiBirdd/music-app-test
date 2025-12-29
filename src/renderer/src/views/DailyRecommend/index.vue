@@ -1,20 +1,20 @@
 <!-- 每日推荐歌单 和其他歌单作区分 -->
 <script setup lang="ts">
-import {useRoute} from "vue-router"
-import {useMusicAction} from "@/store/music"
-import usePlayList, {playListState} from "@/layout/BaseAside/usePlayList"
-import {varDayim} from '@/utils'
-import BaseButton from "@/components/BaseButton/index.vue";
+import { useRoute } from 'vue-router'
+import { useMusicAction } from '@/store/music'
+import usePlayList, { playListState } from '@/layout/BaseAside/usePlayList'
+import { varDayim } from '@/utils'
+import BaseButton from '@/components/BaseButton/index.vue'
 import SongInfo from '@/components/SongInfo/index.vue'
 import SongList from '@/components/SongList/index.vue'
-import {columns} from "@/views/PlayList/config"
+import { columns } from '@/views/PlayList/config'
 
 const { getPlayListDetailFn, getRecommendSongs } = usePlayList()
 const route = useRoute()
 const music = useMusicAction()
 
 const init = () => {
-  const { id } = route.query as { id: number | 'recommendSongs' | null}
+  const { id } = route.query as { id: number | 'recommendSongs' | null }
   // 是否是每日推荐歌曲
   if (id === 'recommendSongs') {
     getRecommendSongs()
@@ -27,7 +27,7 @@ init()
 
 <template>
   <SongInfo v-if="route.query.id !== 'recommendSongs'"></SongInfo>
-  <div class="padding-container" v-else>
+  <div v-else class="padding-container">
     <div class="top">
       <div class="day">
         <div class="row-left row"></div>
@@ -46,13 +46,13 @@ init()
     </div>
   </div>
   <SongList
-    @play="music.getMusicUrlHandler"
     :columns="columns"
     :loading="playListState.loading"
     :songs="music.state.songs"
     :ids="playListState.ids"
     :list="playListState.playList"
     :list-info="playListState.listInfo"
+    @play="music.getMusicUrlHandler"
   />
 </template>
 
@@ -115,5 +115,4 @@ init()
     }
   }
 }
-
 </style>

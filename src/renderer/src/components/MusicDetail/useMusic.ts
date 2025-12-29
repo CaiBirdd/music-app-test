@@ -1,4 +1,3 @@
-// @ts-nocheck
 import ColorThief from 'colorthief'
 
 let pointer = 1
@@ -45,12 +44,12 @@ export function gradualChange(img: HTMLImageElement, rgb: Array<Array<string>>) 
   }
 }
 
-export const useRhythm = (insertionEl) => {
+export const useRhythm = (insertionEl: any) => {
   const style = document.createElement('style')
   document.head.appendChild(style)
   const stylesheet = style.sheet
 
-  const splitImg = (img) => {
+  const splitImg = (img: any) => {
     const imgWidth = img.naturalWidth
     const imgHeight = img.naturalHeight
     const smallImageWidth = imgWidth / 2
@@ -84,10 +83,10 @@ export const useRhythm = (insertionEl) => {
 
         // 将canvas的内容转换为DataURL
         const imgUrl = cutCanvas.toDataURL('image/png')
-        let imageElement = null
+        let imageElement: any = null
         // 创建img元素并设置其src属性
         if (!nodesLength) {
-          imageElement = document.createElement('div')
+          imageElement = document.createElement('div') as any
           imageElement.style.backgroundImage = `url(${imgUrl})`
           imageElement.style.width = '50vw'
           imageElement.style.height = '50vh'
@@ -109,7 +108,7 @@ export const useRhythm = (insertionEl) => {
         const deg = Math.floor(Math.random() * 360)
         const animationName = `cut-rotate-${index}`
 
-        stylesheet.insertRule(
+        stylesheet?.insertRule(
           `
         @keyframes ${animationName} {
           from {
@@ -123,7 +122,7 @@ export const useRhythm = (insertionEl) => {
           stylesheet.cssRules.length
         )
 
-        stylesheet.insertRule(
+        stylesheet?.insertRule(
           `
         div.cut-image-${index} {
           animation: ${animationName} 80s infinite linear;

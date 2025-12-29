@@ -5,10 +5,10 @@ import Card from '@/components/Card/index.vue'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    Tabs: typeof Tabs;
-    TabPane: typeof TabPane;
-    BaseButton: typeof BaseButton;
-    Card: typeof Card;
+    Tabs: typeof Tabs
+    TabPane: typeof TabPane
+    BaseButton: typeof BaseButton
+    Card: typeof Card
   }
 }
 

@@ -54,8 +54,14 @@ import eslintPluginVue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
 
 export default defineConfig(
-  // 忽略目录
-  { ignores: ['**/node_modules', '**/dist', '**/out'], reportUnusedDisableDirectives: 'off' },
+  // 忽略目录及 linter 选项配置
+  {
+    ignores: ['**/node_modules', '**/dist', '**/out'],
+    // 注意：reportUnusedDisableDirectives 必须放在 linterOptions 中（ESLint 9.x flat config 要求）
+    linterOptions: {
+      reportUnusedDisableDirectives: 'off'
+    }
+  },
 
   // TypeScript 推荐规则
   tseslint.configs.recommended,
@@ -168,6 +174,35 @@ v - bind('bgColor[0]') // bgColor[0] = [89, 134, 167]
 v - bind('bgColor[0]') // bgColor[0] = "89, 134, 167"
 ```
 
+### Q5: ESLint 报错 "This appears to be in eslintrc format"？
+
+**问题描述：** ESLint 9.x 使用扁平配置格式（flat config），某些配置项的位置要求与旧版不同。
+
+**错误信息：**
+
+```
+ConfigError: Config (unnamed): Key "reportUnusedDisableDirectives":
+This appears to be in eslintrc format rather than flat config format.
+```
+
+**解决方案：** 将 `reportUnusedDisableDirectives` 配置项移到 `linterOptions` 对象中：
+
+```javascript
+// ❌ 错误写法（eslintrc 格式）
+export default defineConfig({
+  ignores: ['**/node_modules'],
+  reportUnusedDisableDirectives: 'off' // 直接放在顶层
+})
+
+// ✅ 正确写法（flat config 格式）
+export default defineConfig({
+  ignores: ['**/node_modules'],
+  linterOptions: {
+    reportUnusedDisableDirectives: 'off' // 放在 linterOptions 中
+  }
+})
+```
+
 ---
 
 ## 📝 版本兼容性说明
@@ -180,4 +215,4 @@ v - bind('bgColor[0]') // bgColor[0] = "89, 134, 167"
 
 ---
 
-_文档更新时间：2025年12月28日_
+_文档更新时间：2025年12月29日_

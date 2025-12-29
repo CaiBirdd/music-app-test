@@ -22,7 +22,7 @@ const activeName = computed({
 </script>
 
 <template>
-  <el-tabs class="bass-tabs" v-model="activeName" v-bind="$attrs">
+  <el-tabs v-model="activeName" class="bass-tabs" v-bind="$attrs">
     <slot></slot>
   </el-tabs>
 </template>

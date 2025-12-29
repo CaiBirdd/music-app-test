@@ -1,6 +1,8 @@
 <script setup lang="ts" name="Bottom">
+// 使用 Record<string, never> 代替 {}，避免空对象类型接受数字/字符串等非 nullish 值触发 ESLint 报错
 defineSlots<{
-  default?: (props: {}) => any
+  //default?: (props: {}) => any
+  default?: (props: Record<string, never>) => any
 }>()
 </script>
 

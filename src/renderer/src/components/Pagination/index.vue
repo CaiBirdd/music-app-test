@@ -18,13 +18,13 @@ const emit = defineEmits(['size-change', 'current-change'])
 <template>
   <div class="box">
     <el-pagination
-      @size-change="emit('size-change', $event)"
-      @current-change="emit('current-change', $event)"
       :current-page="currentPage"
       :page-size="pageSize"
       :background="background"
       :layout="layout"
       :total="total"
+      @size-change="emit('size-change', $event)"
+      @current-change="emit('current-change', $event)"
     />
   </div>
 </template>

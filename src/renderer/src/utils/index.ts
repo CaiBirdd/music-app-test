@@ -51,7 +51,7 @@ export function formatDate(timestamp: number, format: string = 'YY-MM-DD hh:mm:s
     hour = date.getHours(),
     min = date.getMinutes(),
     sec = date.getSeconds()
-  const preArr = Array.apply(null, Array(10)).map((item, index) => {
+  const preArr = [...Array(10)].map((_, index) => {
     return '0' + index
   })
   const result = format
@@ -156,7 +156,6 @@ export function animation(
   cb: (elapsed: number, done: boolean) => void
 ): (isPause: boolean) => void {
   let start: number | undefined
-  let intervalId: ReturnType<typeof setInterval> | undefined
   let elapsed = 0
   let paused = false
 
@@ -174,7 +173,7 @@ export function animation(
   }
 
   start = Date.now()
-  intervalId = setInterval(step, 0) // 模拟 requestAnimationFrame 的频率
+  const intervalId: ReturnType<typeof setInterval> = setInterval(step, 0) // 模拟 requestAnimationFrame 的频率
 
   return (isPause: boolean) => {
     if (isPause) {
@@ -190,27 +189,27 @@ export function animation(
 
 // gpt-4
 export function rgbToHsl(r: number, g: number, b: number) {
-  ;(r /= 255), (g /= 255), (b /= 255)
-  let max = Math.max(r, g, b),
-    min = Math.min(r, g, b)
-  let h,
-    s,
-    l = (max + min) / 2
+  const rNorm = r / 255
+  const gNorm = g / 255
+  const bNorm = b / 255
+  const max = Math.max(rNorm, gNorm, bNorm)
+  const min = Math.min(rNorm, gNorm, bNorm)
+  let h = 0
+  let s = 0
+  const l = (max + min) / 2
 
-  if (max == min) {
-    h = s = 0 // achromatic
-  } else {
-    let d = max - min
+  if (max !== min) {
+    const d = max - min
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
     switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0)
+      case rNorm:
+        h = (gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)
         break
-      case g:
-        h = (b - r) / d + 2
+      case gNorm:
+        h = (bNorm - rNorm) / d + 2
         break
-      case b:
-        h = (r - g) / d + 4
+      case bNorm:
+        h = (rNorm - gNorm) / d + 4
         break
     }
     h /= 6
@@ -221,10 +220,9 @@ export function rgbToHsl(r: number, g: number, b: number) {
 
 // gpt-4
 export function isGoodColor(r: number, g: number, b: number) {
-  let hsl = rgbToHsl(r, g, b)
-  let h = hsl[0],
-    s = hsl[1],
-    l = hsl[2]
+  const hsl = rgbToHsl(r, g, b)
+  const s = hsl[1]
+  const l = hsl[2]
   // 过滤掉过亮或过暗，过饱和或过淡的颜色
   if (l < 0.2 || l > 0.8 || s < 0.2 || s > 0.8) {
     return false
@@ -366,21 +364,21 @@ export function checkUrlValidity(url: string): UrlValidationResult {
 
 export function convertToProxyUrl(originalUrl) {
   try {
-    const url = new URL(originalUrl);
-    const hostParts = url.hostname.split('.');
+    const url = new URL(originalUrl)
+    const hostParts = url.hostname.split('.')
 
     // 提取 m804 中的数字
-    const serverNum = hostParts[0].replace('m', ''); // "804"
+    const serverNum = hostParts[0].replace('m', '') // "804"
 
-    const fullPath = url.pathname; // "/20250509015458/jdymusic/obj/.../file.mp3"
+    const fullPath = url.pathname // "/20250509015458/jdymusic/obj/.../file.mp3"
 
     // 保留查询参数（如 ?vuutv=xxx）
-    const search = url.search; // "?vuutv=xxx"
+    const search = url.search // "?vuutv=xxx"
     console.log('fullPath', fullPath)
 
-    return `http://neonic.top/music-proxy/${serverNum}${fullPath}${search}`;
+    return `http://neonic.top/music-proxy/${serverNum}${fullPath}${search}`
   } catch (e) {
-    console.error('URL转换失败:', e);
-    return originalUrl; // 或抛出错误
+    console.error('URL转换失败:', e)
+    return originalUrl // 或抛出错误
   }
 }

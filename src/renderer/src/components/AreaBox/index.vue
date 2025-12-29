@@ -9,12 +9,10 @@ const props = withDefaults(defineProps<Props>(), {
   isMove: true
 })
 const content = ref<HTMLDivElement>()
-const emit = defineEmits(['titleClick'])
 const left = ref(0)
 const rightDisabled = ref(false)
 const leftDisabled = ref(true)
 
-const isMove = () => {}
 const moveHandler = (direction: 'left' | 'right') => {
   if (content.value) {
     const children = content.value!.children
@@ -75,16 +73,16 @@ const moveHandler = (direction: 'left' | 'right') => {
           <slot name="title"></slot>
           <el-icon style="position: relative; top: 1px" :size="16"><ArrowRightBold /></el-icon>
         </span>
-        <div class="move-container" v-if="props.isMove">
+        <div v-if="props.isMove" class="move-container">
           <div
-            @click="moveHandler('left')"
             :class="['left', 'move', leftDisabled ? 'disabled' : '']"
+            @click="moveHandler('left')"
           >
             <el-icon :size="20"><ArrowLeft /></el-icon>
           </div>
           <div
-            @click="moveHandler('right')"
             :class="['right', 'move', rightDisabled ? 'disabled' : '']"
+            @click="moveHandler('right')"
           >
             <el-icon :size="20"><ArrowRight /></el-icon>
           </div>

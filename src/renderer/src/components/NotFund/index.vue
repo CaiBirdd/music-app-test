@@ -1,11 +1,11 @@
 <!-- 显示一个“当前歌曲暂无音源”的弹窗对话框，当需要告知用户没有音源时弹出。 -->
 <script lang="ts" setup>
-import {watch} from "vue";
+import { watch } from 'vue'
 
-const visible = defineModel({default: false})
+const visible = defineModel({ default: false })
 
 watch(visible, (val) => {
-  console.log('12312',val)
+  console.log('12312', val)
 })
 const onClose = () => {
   visible.value = false
@@ -13,11 +13,7 @@ const onClose = () => {
 </script>
 
 <template>
-  <VDialog
-    v-model="visible"
-    :scrim="false"
-    max-width="400"
-  >
+  <VDialog v-model="visible" :scrim="false" max-width="400">
     <VCard rounded="lg">
       <VCardTitle class="d-flex justify-space-between align-center">
         <div class="text-h5 text-medium-emphasis ps-2">当前歌曲暂无音源</div>

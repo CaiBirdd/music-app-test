@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import useSearch from '@/components/Search/useSearch'
 import { searchDefault, searchHotDetail, searchSuggest } from '@/api/search'
 import List from './List.vue'
 import { useFlags } from '@/store/flags'
@@ -20,7 +19,6 @@ const router = useRouter()
 const route = useRoute()
 const keywords = ref('')
 const showSuggest = ref(false)
-const { search } = useSearch()
 const flags = useFlags()
 const model = ref<'hot' | 'keywords'>('hot')
 const music = useMusicAction()
@@ -122,7 +120,6 @@ const blurHandler = () => {
     showSuggest.value = false
   }, 300)
 }
-let timer: NodeJS.Timeout
 const inputHandler = () => {
   if (keywords.value === '') {
     model.value = 'hot'
@@ -201,37 +198,37 @@ const realkeyword = computed(() => {
 
 <template>
   <div
-    @keyup.enter="searchHandler(realkeyword, 'search')"
     ref="searchContainerEl"
     class="search-container"
+    @keyup.enter="searchHandler(realkeyword, 'search')"
   >
     <el-icon
-      @click="searchHandler(realkeyword, 'search')"
       class="search-icon"
       size="18px"
       color="rgba(255, 255, 255, 0.5)"
+      @click="searchHandler(realkeyword, 'search')"
     >
       <Search />
     </el-icon>
     <input
       v-model.trim="keywords"
+      class="search"
+      :placeholder="placeholderInfo.showKeyword"
       @keydown.stop
       @focus="focusHandler"
       @blur="blurHandler"
       @input="inputHandler"
-      class="search"
-      :placeholder="placeholderInfo.showKeyword"
     />
-    <div v-loading="loading" v-show="showSuggest" class="suggest">
+    <div v-show="showSuggest" v-loading="loading" class="suggest">
       <List
         :model="model"
+        :record-content="recordContent"
+        :keywords-list="state.keywordsList"
+        :list="state.scoreList"
         @click="searchHandler"
         @clear="clearRecord"
-        @recordTagClick="recordTagClick"
-        @deleteTag="deleteTag"
-        :recordContent="recordContent"
-        :keywordsList="state.keywordsList"
-        :list="state.scoreList"
+        @record-tag-click="recordTagClick"
+        @delete-tag="deleteTag"
       />
     </div>
   </div>

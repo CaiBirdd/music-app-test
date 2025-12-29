@@ -10,9 +10,9 @@ const emit = defineEmits(['click'])
 
 <template>
   <div
-    @click="emit('click', item)"
     :style="{ fontSize: item.asideFontSize + 'px' || '' }"
     :class="['play-list-item', { current: checked }]"
+    @click="emit('click', item)"
   >
     <i v-if="item.icon" :class="['iconfont', item.icon || '']"></i>
     <img v-else-if="item.coverImgUrl" :src="item.coverImgUrl + '?param=150y150'" alt="" />

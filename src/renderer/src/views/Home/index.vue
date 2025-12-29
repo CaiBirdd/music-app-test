@@ -1,4 +1,3 @@
-
 <script setup lang="ts" name="Home">
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'

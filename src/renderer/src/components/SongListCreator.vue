@@ -29,7 +29,7 @@ const create = async () => {
 </script>
 
 <template>
-  <v-dialog :scrim="false" v-model="visible" max-width="400">
+  <v-dialog v-model="visible" :scrim="false" max-width="400">
     <v-card rounded="lg">
       <v-card-title class="d-flex justify-space-between align-center">
         <div class="text-h5 text-medium-emphasis ps-2">创建歌单</div>
@@ -37,17 +37,17 @@ const create = async () => {
       </v-card-title>
       <v-card-text>
         <v-textarea
+          v-model="desc"
           label="歌单标题"
           :center-affix="false"
-          v-model="desc"
           :counter="40"
           rows="2"
           variant="outlined"
         ></v-textarea>
 
         <v-checkbox-btn
-          class="mb-4"
           v-model="privacy"
+          class="mb-4"
           label="隐私歌单"
           color="primary"
         ></v-checkbox-btn>

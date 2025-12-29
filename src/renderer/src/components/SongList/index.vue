@@ -1,9 +1,9 @@
 <!-- 功能：渲染歌曲列表页（可搜索、播放、分页、右键菜单、显示专辑/歌手信息等）
  是歌曲列表展示与播放交互的主视图组件。 -->
 <script setup lang="ts">
-import {defineComponent, h, nextTick, ref, watch} from 'vue'
-import {useRoute, useRouter} from 'vue-router'
-import {animation, lookup} from '@/utils'
+import { defineComponent, h, nextTick, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { animation, lookup } from '@/utils'
 import { GetMusicDetailData, PlayList } from '@/api/musicList'
 import { useUserInfo } from '@/store'
 import useMusic from '@/components/MusicPlayer/useMusic'
@@ -31,24 +31,24 @@ export interface Columns {
 const playlistMenuItems = [
   { label: '收藏歌曲', value: 'collection' },
   { label: '评论', value: 'comment' },
-  { label: '删除歌曲', value: 'delete' },
+  { label: '删除歌曲', value: 'delete' }
 ]
 interface Props {
-  list: GetMusicDetailData[];
-  songs: GetMusicDetailData;
-  columns: Columns[];
-  loading?: boolean;
-  ids?: number[];
-  listInfo?: PlayList | any;
-  scroll?: boolean;
-  isPaging?: boolean;
-  total?: number;
-  pageSize?: number;
-  currentPage?: number;
-  isLoadingEndflyback?: boolean;
-  lazy?: boolean;
-  isNeedTitle?: boolean;
-  isSearch?: boolean;
+  list: GetMusicDetailData[]
+  songs: GetMusicDetailData
+  columns: Columns[]
+  loading?: boolean
+  ids?: number[]
+  listInfo?: PlayList | any
+  scroll?: boolean
+  isPaging?: boolean
+  total?: number
+  pageSize?: number
+  currentPage?: number
+  isLoadingEndflyback?: boolean
+  lazy?: boolean
+  isNeedTitle?: boolean
+  isSearch?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   listInfo: {},
@@ -58,7 +58,7 @@ const props = withDefaults(defineProps<Props>(), {
   currentPage: 1,
   isLoadingEndflyback: false,
   lazy: true,
-  isNeedTitle: true,
+  isNeedTitle: true
 })
 const emit = defineEmits(['play', 'current-change', 'update:modelValue'])
 
@@ -88,7 +88,7 @@ const handlePlaylistMenuSelect = (item: { label: string; value: string }, row, i
       router.push({
         path: '/comment',
         query: {
-          id: row.id,
+          id: row.id
         }
       })
       break
@@ -114,11 +114,7 @@ const playHandler = async (item: GetMusicDetailData, index: number) => {
   id.value = item.id
   emit('play', item, index)
 
-  if (
-    music.state.runtimeList?.id !== music.state.currentItem?.id &&
-    props.ids &&
-    props.listInfo
-  ) {
+  if (music.state.runtimeList?.id !== music.state.currentItem?.id && props.ids && props.listInfo) {
     music.updateRuntimeList({ tracks: props.list, ...props.listInfo }, props.ids)
   }
 }
@@ -181,39 +177,50 @@ const setItemRef = (el: any, id: number) => {
     itemRefs.value[id] = el.$el || el
   }
 }
-watch(() => props.loading, async (value) => {
-  if(!value && route.query.position && music.state.searchList.length > 0) {
-    const target = music.state.searchList.find(item => props.list.find(listItem => item.id === listItem.id))
-    console.log('target', target)
+watch(
+  () => props.loading,
+  async (value) => {
+    if (!value && route.query.position && music.state.searchList.length > 0) {
+      const target = music.state.searchList.find((item) =>
+        props.list.find((listItem) => item.id === listItem.id)
+      )
+      console.log('target', target)
 
-    if (target) {
-      nextTick(() => {
-        const targetEl = itemRefs.value[target.id]
-        targetEl.classList.add('position-target')
-        const scrollEl = document.querySelector('.body')
-        if (targetEl && scrollEl) {
-          scrollEl.scrollTo({
-            top: targetEl.getBoundingClientRect().top - (scrollEl.clientHeight / 2.35),
-            behavior: 'smooth',
-          })
-          targetEl.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'
-          targetEl.animate([
-            {backgroundColor: 'rgba(255, 255, 255, 0.06)'},
-            {backgroundColor: 'rgba(255, 255, 255, 0)'}
-          ], {
-            duration: 1300,
-            easing: "ease-in-out",
-            delay: 3000,
-          }).finished.then(() => {
-            targetEl.style.backgroundColor = ''
-          })
-        }
-      })
+      if (target) {
+        nextTick(() => {
+          const targetEl = itemRefs.value[target.id]
+          targetEl.classList.add('position-target')
+          const scrollEl = document.querySelector('.body')
+          if (targetEl && scrollEl) {
+            scrollEl.scrollTo({
+              top: targetEl.getBoundingClientRect().top - scrollEl.clientHeight / 2.35,
+              behavior: 'smooth'
+            })
+            targetEl.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'
+            targetEl
+              .animate(
+                [
+                  { backgroundColor: 'rgba(255, 255, 255, 0.06)' },
+                  { backgroundColor: 'rgba(255, 255, 255, 0)' }
+                ],
+                {
+                  duration: 1300,
+                  easing: 'ease-in-out',
+                  delay: 3000
+                }
+              )
+              .finished.then(() => {
+                targetEl.style.backgroundColor = ''
+              })
+          }
+        })
+      }
     }
+  },
+  {
+    immediate: true
   }
-}, {
-  immediate: true
-})
+)
 
 watch(
   () => props.list,
@@ -224,17 +231,11 @@ watch(
 </script>
 
 <template>
-  <div
-    class="song-list-container"
-    :style="{ overflowY: scroll ? 'auto' : 'visible' }"
-  >
+  <div class="song-list-container" :style="{ overflowY: scroll ? 'auto' : 'visible' }">
     <!-- 搜索框 -->
-    <div
-      v-if="isSearch"
-      class="search-container"
-      :style="{ display: loading ? 'none' : '' }"
-    >
+    <div v-if="isSearch" class="search-container" :style="{ display: loading ? 'none' : '' }">
       <VTextField
+        v-model="searchKeyword"
         density="compact"
         placeholder="搜索此列表歌曲"
         prepend-inner-icon="mdi-magnify"
@@ -242,33 +243,19 @@ watch(
         :max-width="400"
         base-color="#ffffff33"
         color="#ffffff33"
-        v-model="searchKeyword"
-        @update:modelValue="handleSearch"
+        @update:model-value="handleSearch"
       />
     </div>
 
     <!-- 版权提示对话框 -->
-    <VDialog
-      v-model="copyrightVisible"
-      scrim
-      :max-width="400"
-    >
+    <VDialog v-model="copyrightVisible" scrim :max-width="400">
       <VCard rounded="lg">
         <VCardTitle class="d-flex justify-space-between align-center">
           <div class="text-h5 text-medium-emphasis ps-2">当前歌曲暂无音源</div>
-          <VBtn
-            icon="mdi-close"
-            variant="text"
-            @click="closeCopyrightVisible"
-          />
+          <VBtn icon="mdi-close" variant="text" @click="closeCopyrightVisible" />
         </VCardTitle>
         <VCardText class="d-flex justify-center align-center">
-          <VBtn
-            variant="tonal"
-            @click="closeCopyrightVisible"
-          >
-            好
-          </VBtn>
+          <VBtn variant="tonal" @click="closeCopyrightVisible"> 好 </VBtn>
         </VCardText>
       </VCard>
     </VDialog>
@@ -276,11 +263,7 @@ watch(
     <!-- 主要内容 -->
     <template v-if="loading || filterList.length">
       <!-- 标题行 -->
-      <div
-        v-if="isNeedTitle"
-        class="title-container"
-        :style="{ display: loading ? 'none' : '' }"
-      >
+      <div v-if="isNeedTitle" class="title-container" :style="{ display: loading ? 'none' : '' }">
         <div
           v-for="config in columns"
           v-show="!config.hidden"
@@ -294,10 +277,7 @@ watch(
       </div>
 
       <!-- 歌曲列表 -->
-      <div
-        class="list-container"
-        :style="{ display: loading ? 'none' : '' }"
-      >
+      <div class="list-container" :style="{ display: loading ? 'none' : '' }">
         <ContextMenu
           v-for="(data, i) in filterList"
           :key="data.id"
@@ -305,8 +285,8 @@ watch(
           @select="(e) => handlePlaylistMenuSelect(e, data, i)"
         >
           <div
-            class="list"
             :ref="(el) => setItemRef(el, data.id)"
+            class="list"
             :class="{ 'disable-list': data.copyright === 0 }"
             @dblclick="() => playHandler(data, i)"
             @mousedown="() => mousedownHandler(data)"
@@ -342,11 +322,7 @@ watch(
               </template>
               <template v-else-if="config.type === 'index'">
                 <!-- 索引 -->
-                {{
-                  formatCount(
-                    isPaging ? pageSize * (currentPage - 1) + (i + 1) : i + 1
-                  )
-                }}
+                {{ formatCount(isPaging ? pageSize * (currentPage - 1) + (i + 1) : i + 1) }}
               </template>
               <template v-else-if="config.type === 'title'">
                 <!-- 歌曲标题 -->
@@ -377,10 +353,7 @@ watch(
                           @click="ar.id && singerDetail(ar.id)"
                         >
                           {{ ar.name || data.artist || '未知艺人' }}
-                          <span
-                            v-if="index < data.ar.length - 1"
-                            style="color: #969696"
-                          > / </span>
+                          <span v-if="index < data.ar.length - 1" style="color: #969696"> / </span>
                         </span>
                       </template>
                     </div>
@@ -398,17 +371,9 @@ watch(
     </template>
 
     <!-- 空状态 -->
-    <div
-      v-else
-      style="display: grid; place-items: center; gap: 20px"
-    >
-      <div style="font-size: 20px">
-        没有找到关于"{{ searchKeyword }}"的任何内容
-      </div>
-      <VImg
-        :src="NotFound"
-        width="150"
-      />
+    <div v-else style="display: grid; place-items: center; gap: 20px">
+      <div style="font-size: 20px">没有找到关于"{{ searchKeyword }}"的任何内容</div>
+      <VImg :src="NotFound" width="150" />
     </div>
 
     <!-- 分页 -->
@@ -422,11 +387,7 @@ watch(
     />
 
     <!-- 加载状态 -->
-    <div
-      class="loading"
-      :style="{ display: loading ? 'block' : 'none' }"
-      v-loading="loading"
-    />
+    <div v-loading="loading" class="loading" :style="{ display: loading ? 'block' : 'none' }" />
   </div>
 </template>
 

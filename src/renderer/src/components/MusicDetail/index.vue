@@ -41,18 +41,18 @@ onUnmounted(() => {
 
 <template>
   <div ref="containerEl" :class="['container', { open: setModelValue }]">
-    <el-icon :size="45" @click="closeDetail" class="close np-drag"><ArrowDown /></el-icon>
+    <el-icon :size="45" class="close np-drag" @click="closeDetail"><ArrowDown /></el-icon>
     <div class="box" :style="{ height: correctHeight + 'px' }">
       <div class="scroll-box" :style="{ height: correctHeight * 2 + 'px' }">
         <FlowBg :bg="bg" />
         <div class="music-detail-container">
           <LyricDisplay
             :lyric="music.state.lyric"
-            :lrcMode="music.state.lrcMode"
+            :lrc-mode="music.state.lrcMode"
             :bg="bg"
             :title="music.state.songs.name"
             :ar="music.state.songs.ar"
-            :videoPlayUrl="music.state.videoPlayUrl"
+            :video-play-url="music.state.videoPlayUrl"
           />
           <div
             class="music-detail-bottom"

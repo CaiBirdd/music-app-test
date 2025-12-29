@@ -91,8 +91,8 @@ export const useUserInfo = defineStore('userInfoId', {
           item.show = this.isLogin
         }
       })
-      let playItem = asideMenuConfig.find((item) => item.mark === 'play')
-      let subscribedListItem = asideMenuConfig.find((item) => item.mark === 'subscribedList')
+      const playItem = asideMenuConfig.find((item) => item.mark === 'play')
+      const subscribedListItem = asideMenuConfig.find((item) => item.mark === 'subscribedList')
       myList.length && (playItem!.list = myList)
       subscribedList.length && (subscribedListItem!.list = subscribedList)
 

@@ -26,7 +26,7 @@ router.push = (params) => {
   let to
   // 获取当前路由的 count，如果不存在则默认为 0
   let count = +router.currentRoute.value.query.count!
-  
+
   if (typeof params === 'string') {
     // 处理字符串形式的跳转路径
     const result = parsePathQuery(params)

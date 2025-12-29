@@ -29,7 +29,7 @@ const cards = ref([
   <div>
     <v-container v-if="loading">
       <v-row>
-        <v-col v-for="{ src, title, subtitle } in cards" :key="title" cols="12" lg="4" md="6">
+        <v-col v-for="{ title } in cards" :key="title" cols="12" lg="4" md="6">
           <v-skeleton-loader :loading="loading" height="240" type="image, list-item-two-line">
           </v-skeleton-loader>
         </v-col>

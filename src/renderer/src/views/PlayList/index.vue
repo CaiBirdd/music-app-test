@@ -28,7 +28,6 @@ watch(
 <template>
   <SongInfo></SongInfo>
   <SongList
-    @play="music.getMusicUrlHandler"
     :key="String(route.query.id ?? '')"
     :columns="columns"
     :loading="playListState.loading"
@@ -37,6 +36,7 @@ watch(
     :list="playListState.playList"
     :list-info="playListState.listInfo"
     lazy
+    @play="music.getMusicUrlHandler"
   />
 </template>
 

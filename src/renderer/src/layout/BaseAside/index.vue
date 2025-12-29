@@ -118,6 +118,7 @@ watch(
 )
 watch(current, (value) => {
   if (value && value.coverImgUrl) {
+    //
   }
 })
 // 列表选中条件，有id优先id，没有id用path
@@ -133,7 +134,7 @@ const isCurrent = (path: string, id?: number) => {
 
 const gotoDetail = () => {
   router.push({
-    path: '/detail',
+    path: '/user-detail',
     query: {
       uid: store.profile.userId
     }
@@ -158,19 +159,19 @@ const openDialog = () => {
     <div class="avatar-box">
       <template v-if="store.isLogin">
         <div
-          @click="gotoDetail"
           :style="{ backgroundImage: `url(${store.profile.avatarUrl})` }"
           class="head-portraits"
+          @click="gotoDetail"
         ></div>
         <div class="nickname">{{ store.profile.nickname }}</div>
       </template>
-      <div v-else @click="login" class="not-login">
+      <div v-else class="not-login" @click="login">
         <el-icon :size="22"><User /></el-icon>
         <span>未登录</span>
       </div>
     </div>
     <div class="play-container">
-      <template :key="i" v-for="(menuItem, i) in store.asideMenuConfig">
+      <template v-for="(menuItem, i) in store.asideMenuConfig" :key="i">
         <div
           v-if="menuItem.show"
           :class="['lump', { 'collapsed-lump': menuItem.type === 'collapsed' }]"
@@ -179,7 +180,7 @@ const openDialog = () => {
             <span @click="menuItem.type === 'collapsed' && collapsedHandler(menuItem)">{{
               menuItem.title
             }}</span>
-            <v-icon @click="openDialog" class="plus" icon="mdi-plus" />
+            <v-icon class="plus" icon="mdi-plus" @click="openDialog" />
           </div>
           <template v-if="menuItem.type === 'collapsed'">
             <transition
@@ -201,7 +202,7 @@ const openDialog = () => {
                   }
                 ]"
               >
-                <template v-for="item in menuItem.list">
+                <template v-for="item in menuItem.list" :key="item.id">
                   <ContextMenu
                     v-if="menuItem.mark === 'play'"
                     :items="playlistMenuItems"
@@ -226,6 +227,7 @@ const openDialog = () => {
           <template v-else>
             <Item
               v-for="item in menuItem.list"
+              :key="item.id"
               :item="item"
               :checked="isCurrent(item.path, item.id)"
               @click="itemClick"

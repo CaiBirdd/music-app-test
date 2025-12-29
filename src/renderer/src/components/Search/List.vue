@@ -1,7 +1,5 @@
 <script setup lang="ts">
-
-import {RecordContent} from '@/components/Search/type'
-import {useRouter} from 'vue-router'
+import { RecordContent } from '@/components/Search/type'
 
 interface Props {
   list: {
@@ -16,7 +14,7 @@ interface Props {
     albums?: []
     artists?: []
     playlists?: []
-    songs?:[]
+    songs?: []
   }
   model: 'hot' | 'keywords'
   recordContent: RecordContent[]
@@ -24,20 +22,19 @@ interface Props {
 
 const emit = defineEmits(['click', 'clear', 'recordTagClick', 'deleteTag'])
 const props = defineProps<Props>()
-const router = useRouter()
 const config = {
   allMatch: {
     text: '猜你想搜',
-    icon: '<el-icon><Search /></el-icon>',
+    icon: '<el-icon><Search /></el-icon>'
   },
   songs: {
     text: '单曲',
-    icon: '',
+    icon: ''
   },
-  artists:{
+  artists: {
     text: '歌手',
-    icon: '',
-  } ,
+    icon: ''
+  },
   albums: {
     text: '专辑',
     icon: ''
@@ -45,9 +42,8 @@ const config = {
   playlists: {
     text: '歌单',
     icon: ''
-  },
+  }
 }
-
 </script>
 
 <template>
@@ -56,39 +52,54 @@ const config = {
       <div v-show="recordContent.length" class="record">
         <div class="list-title-container">
           <span class="list-title">搜索历史</span>
-          <el-icon @click="emit('clear')" color="rgba(255, 255, 255, 0.3)" class="clear"><DeleteFilled /></el-icon>
+          <el-icon color="rgba(255, 255, 255, 0.3)" class="clear" @click="emit('clear')"
+            ><DeleteFilled
+          /></el-icon>
         </div>
         <div class="record-list">
-          <div
-            v-for="(item, index) in recordContent"
-            :key="item.term"
-            class="record-item"
-          >
-            <span @click="emit('recordTagClick', item, index)" class="record-tag">{{ item.term }}</span>
-            <el-icon @click="emit('deleteTag', index)" color="rgba(255, 255, 255, 0.3)" class="delete"><CircleCloseFilled /></el-icon>
+          <div v-for="(item, index) in recordContent" :key="item.term" class="record-item">
+            <span class="record-tag" @click="emit('recordTagClick', item, index)">{{
+              item.term
+            }}</span>
+            <el-icon
+              color="rgba(255, 255, 255, 0.3)"
+              class="delete"
+              @click="emit('deleteTag', index)"
+              ><CircleCloseFilled
+            /></el-icon>
           </div>
         </div>
       </div>
       <div>
-        <div style="padding: 0 30px;margin-bottom: 10px;" class="list-title">热搜榜单</div>
-        <div  @click="emit('click', item, 'hot')" v-for="(item, index) in props.list" class="item">
-          <div class="sort">{{ index+1 }}</div>
+        <div style="padding: 0 30px; margin-bottom: 10px" class="list-title">热搜榜单</div>
+        <div
+          v-for="(item, index) in props.list"
+          :key="item.searchWord"
+          class="item"
+          @click="emit('click', item, 'hot')"
+        >
+          <div class="sort">{{ index + 1 }}</div>
           <div class="content">
             <div class="title">
               <span class="name">{{ item.searchWord }}</span>
-              <img v-if="item.iconUrl" :src="item.iconUrl" class="icon">
+              <img v-if="item.iconUrl" :src="item.iconUrl" class="icon" />
               <span class="score">{{ item.score }}</span>
             </div>
-            <div class="desc">{{item.content}}</div>
+            <div class="desc">{{ item.content }}</div>
           </div>
         </div>
       </div>
     </template>
     <template v-if="model === 'keywords'">
-      <div class="suggest-box" v-for="key in props.keywordsList.order">
+      <div v-for="(key, index) in props.keywordsList.order" :key="index" class="suggest-box">
         <div class="title">{{ config[key].text }}</div>
-        <div @click="emit('click', target, key)" class="item" v-for="target in props.keywordsList[key]">
-          <div class="name" v-html="target.text"/>
+        <div
+          v-for="(target, indexIn) in props.keywordsList[key]"
+          :key="indexIn"
+          class="item"
+          @click="emit('click', target, key)"
+        >
+          <div class="name">{{ target.text }}</div>
         </div>
       </div>
     </template>
@@ -140,7 +151,7 @@ const config = {
           font-size: 14px;
           padding: 5px 10px;
           border-radius: 5px;
-          background-color: rgba(255,255,255,0.05);
+          background-color: rgba(255, 255, 255, 0.05);
           font-weight: 400;
           cursor: pointer;
           .textOverflow();
@@ -160,7 +171,7 @@ const config = {
     cursor: pointer;
     padding: 0 30px;
     &:hover {
-      background-color: rgba(0,0,0,0.05);
+      background-color: rgba(0, 0, 0, 0.05);
     }
 
     .sort {
@@ -187,7 +198,6 @@ const config = {
         > * {
           margin-right: 5px;
         }
-
       }
       .desc {
         font-size: 12px;
@@ -195,7 +205,7 @@ const config = {
       }
     }
   }
-  .item:nth-child(-n+3) {
+  .item:nth-child(-n + 3) {
     .sort {
       color: rgba(255, 0, 0, 0.9);
     }
@@ -216,6 +226,5 @@ const config = {
       height: auto;
     }
   }
-
 }
 </style>

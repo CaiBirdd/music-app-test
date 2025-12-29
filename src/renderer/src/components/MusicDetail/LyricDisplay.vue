@@ -90,6 +90,7 @@ const arNames = computed(() => {
         :style="{ transform: props.lyric.length ? '' : 'translateX(0)' }"
       >
         <div
+          class="title"
           @click="
             () => {
               flash.isOpenDetail = false
@@ -101,7 +102,6 @@ const arNames = computed(() => {
               })
             }
           "
-          class="title"
         >
           {{ props.title }} -
           <span v-for="(item, index) in props.ar"
@@ -109,18 +109,18 @@ const arNames = computed(() => {
           >
         </div>
         <video
+          v-show="props.videoPlayUrl"
           ref="videoCover"
           class="video-cover"
           autoplay
           loop
           muted
-          v-show="props.videoPlayUrl"
           :src="props.videoPlayUrl || undefined"
         ></video>
         <div v-show="!props.videoPlayUrl" class="img-cover" />
       </div>
 
-      <div class="lyric-container" v-show="props.lyric.length"></div>
+      <div v-show="props.lyric.length" class="lyric-container"></div>
     </div>
   </div>
 </template>

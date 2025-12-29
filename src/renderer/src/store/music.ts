@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { defineStore } from 'pinia'
 import {
   CurrentItem,
@@ -11,9 +10,9 @@ import {
   GetPlayListDetailRes,
   updateScrobble
 } from '@/api/musicList'
-import { watch, ref, reactive } from 'vue'
+import { watch, reactive } from 'vue'
 import { parseLrc, parseYrc } from '@lrc-player/parse'
-import { randomNum, Yrc } from '@/utils'
+import { randomNum } from '@/utils'
 
 export type Lyric = { time: number | boolean; text: string; line: number }
 interface State {
@@ -38,7 +37,7 @@ interface State {
 
 // 会把用户当前正在播放的列表单独存储起来，以便切换歌单时没有播放切换的歌单不会被清空
 export const useMusicAction = defineStore('musicActionId', () => {
-  let state: State = reactive({
+  const state: State = reactive({
     musicUrl: '', // 用户当前播放器播放的音乐url
     songs: {}, // 用户当前播放器播放的音乐
     currentItem: null, // 用户当前选中的歌单列表，会随着用户选中的菜单变化
@@ -53,7 +52,7 @@ export const useMusicAction = defineStore('musicActionId', () => {
     load: false,
     lastIndexList: [],
     index: 0,
-    searchList: [],
+    searchList: []
   })
   watch(
     () => state.index,
@@ -66,7 +65,8 @@ export const useMusicAction = defineStore('musicActionId', () => {
   }
   const updateCurrentItem = (val: Partial<CurrentItem>) => {
     val.name = val.specialType === 5 ? '我喜欢的歌单' : val.name
-    state.currentItem = val
+    // 类型不匹配，使用as any断言以不影响功能
+    state.currentItem = val as any
   }
   const updateRuntimeList = (list: CurrentItem, ids: number[]) => {
     if (list.specialType !== 5 && state.orderStatusVal === 0) {
@@ -111,7 +111,7 @@ export const useMusicAction = defineStore('musicActionId', () => {
       } else {
         state.videoPlayUrl = null
       }
-    } catch (e) {
+    } catch {
       state.videoPlayUrl = null
     }
   }
@@ -121,8 +121,9 @@ export const useMusicAction = defineStore('musicActionId', () => {
       state.songs = item
       getLyricHandler(item.id)
       getDynamicCoverHandler(item.id)
-      updateScrobble(item.id, state.runtimeList?.id)
-      const [{ data }, { songs }] = await Promise.all([
+      // id可能是string | number，添加as number断言
+      updateScrobble(item.id, state.runtimeList?.id as number | undefined)
+      const [{ data }] = await Promise.all([
         getMusicUrl(item.id),
         getMusicDetail(item.id.toString())
       ])
@@ -177,7 +178,7 @@ export const useMusicAction = defineStore('musicActionId', () => {
     }
   }
   const playEnd = () => {
-    state.index = orderTarget(state?.orderStatusVal!)
+    state.index = orderTarget((state?.orderStatusVal ?? 0) as 0 | 1 | 2 | 3)
     if (state.index > state.runtimeIds.length - 1) {
       return
     }
@@ -185,7 +186,7 @@ export const useMusicAction = defineStore('musicActionId', () => {
   }
   // 切换歌曲
   const cutSongHandler = (target: boolean) => {
-    if ([0, 1, 3].includes(state?.orderStatusVal!)) {
+    if ([0, 1, 3].includes(state?.orderStatusVal ?? 0)) {
       state.index = target ? state.index + 1 : state.index - 1
       if (state.index > state.runtimeIds.length - 1) {
         state.index = 0
@@ -209,7 +210,7 @@ export const useMusicAction = defineStore('musicActionId', () => {
   // }
   const updateBgColor = (colors: Array<Array<number>>) => {
     // 将 [89, 134, 167] 转换为 "89, 134, 167" 供 CSS v-bind 使用
-    state.bgColor = colors.map(color => color.join(', '))
+    state.bgColor = colors.map((color) => color.join(', '))
   }
   // 获取心动歌曲列表  只支持我喜欢的列表 pid: 歌单id   id: 歌曲id
   const getIntelliganceListHandler = async () => {
@@ -220,7 +221,12 @@ export const useMusicAction = defineStore('musicActionId', () => {
     }
 
     const songs = state.songs
-    const { data } = await getIntelliganceList(runtimeList.id, songs.id, songs.id)
+    // id可能是string | number，添加as number断言
+    const { data } = await getIntelliganceList(
+      runtimeList.id as number,
+      songs.id as number,
+      songs.id as number
+    )
 
     const tracks = data
       .filter((item) => !!item.songInfo)
@@ -246,6 +252,6 @@ export const useMusicAction = defineStore('musicActionId', () => {
     updateBgColor,
     getIntelliganceListHandler,
     updateTracks,
-    updateSearchList,
+    updateSearchList
   }
 })

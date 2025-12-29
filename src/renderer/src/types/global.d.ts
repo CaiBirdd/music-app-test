@@ -20,7 +20,7 @@ declare global {
   interface ImportMetaEnv {
     VITE_URL: string
   }
-  
+
   // 全局 $audio 变量（用于某些文件中直接使用 $audio 而不是 window.$audio）
   var $audio: MusicPlayerInstanceType
 }

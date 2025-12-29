@@ -1,6 +1,6 @@
 /**
  * 扩展 vue-router 的类型定义
- * 
+ *
  * 注意：必须保留顶部的 `import 'vue-router'`。
  * 在 TypeScript 中，只有包含顶层 import/export 的文件才会被视为模块。
  * 只有在模块上下文中，`declare module 'vue-router'` 才会执行“模块扩展（Augmentation）”而非“模块覆盖”。

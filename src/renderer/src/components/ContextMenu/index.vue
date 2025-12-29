@@ -1,12 +1,12 @@
 <!-- 右键菜单 -->
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted, inject } from 'vue'
 import { useContextMenu } from './useContextMenu'
 
 const { MENU_KEY } = useContextMenu()
-const menuManager = inject(MENU_KEY)
+const menuManager = inject(MENU_KEY) as any
 
-const props = defineProps({
+defineProps({
   items: {
     type: Array,
     default: () => []
@@ -18,10 +18,10 @@ const emit = defineEmits(['select'])
 const visible = ref(false)
 const x = ref(0)
 const y = ref(0)
-const menuRef = ref(null)
+const menuRef = ref<HTMLElement | null>(null)
 const menuId = ref(Symbol('menu-id'))
 
-const showMenu = (e) => {
+const showMenu = (e: any) => {
   e.preventDefault()
   if (menuManager.activeMenu.value) {
     menuManager.setActiveMenu(null)
@@ -39,13 +39,13 @@ const hideMenu = () => {
   visible.value = false
 }
 
-const handleSelect = (item, event) => {
+const handleSelect = (item: any, event: any) => {
   emit('select', item)
   hideMenu()
   event.stopPropagation()
 }
 
-const handleClickOutside = (e) => {
+const handleClickOutside = (e: any) => {
   if (menuRef.value && !menuRef.value.contains(e.target)) {
     hideMenu()
   }
@@ -76,10 +76,10 @@ onUnmounted(() => {
       :style="{ left: x + 'px', top: y + 'px' }"
     >
       <div
-        v-for="(item, index) in items"
+        v-for="(item, index) in items as any[]"
         :key="index"
         class="menu-item"
-        @click="(e) => handleSelect(item, e)"
+        @click="(e: any) => handleSelect(item, e)"
       >
         {{ item.label }}
       </div>

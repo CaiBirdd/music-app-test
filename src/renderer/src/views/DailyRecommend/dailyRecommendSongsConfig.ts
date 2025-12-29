@@ -1,5 +1,4 @@
-import {GetMusicDetailData, GetPlayListDetailRes} from "@/api/musicList";
-
+import { GetMusicDetailData, GetPlayListDetailRes } from '@/api/musicList'
 
 export const playListMock: GetPlayListDetailRes['playlist'] = {
   id: 9999999, // 歌单id
@@ -13,15 +12,16 @@ export const playListMock: GetPlayListDetailRes['playlist'] = {
   trackCount: 30, //歌单下歌曲总数
   tags: [],
   trackIds: [],
-  creator: { // 创建这个歌单的用户信息
+  creator: {
+    // 创建这个歌单的用户信息
     nickname: '',
     userId: 0,
     avatarUrl: '',
     userType: 4,
-    vipType: 11,
+    vipType: 11
   },
   subscribed: false, // 是否收藏
   ordered: false,
   subscribedCount: 0, // 收藏总数
-  tracks: [] as GetMusicDetailData[],
+  tracks: [] as GetMusicDetailData[]
 }

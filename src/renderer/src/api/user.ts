@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import request from '@/utils/request'
 
 export type Profile = {
   avatarUrl: string // 用户头像
@@ -37,7 +37,7 @@ export type User = {
   avatarUrl: string // 用户头像
 }
 export interface getArtistDetailRes {
-  message: string,
+  message: string
   data: {
     artist: {
       albumSize: number
@@ -51,24 +51,26 @@ export interface getArtistDetailRes {
       musicSize: number
       mvSize: number
       name: string
-      rank: {rank: number, type: number}
+      rank: { rank: number; type: number }
       transNames: any[]
-    },
+    }
     blacklist: boolean
     eventCount: number
     identify: {
       actionUrl: string // 请求网易云音乐的链接
       imageDesc: string // 标签
       imageUrl: string // 标签图片
-    },
+    }
     preferShow: number
-    secondaryExpertIdentiy: {}[]
+    // 使用 Record<string, never> 代替 {} 避免空对象类型报错
+    secondaryExpertIdentiy: Record<string, never>[]
     showPriMsg: boolean
     user: undefined | User
     videoCount: number
-    vipRights: {}
-  },
-  code: number,
+    // 使用 Record<string, never> 代替 {} 避免空对象类型报错
+    vipRights: Record<string, never>
+  }
+  code: number
 }
 
 interface getUserDetailRes {
@@ -87,13 +89,15 @@ interface getUserDetailRes {
   }
 }
 // 获取用户详情  通过指定的uid获取指定用户详情信息
-export const getUserDetail = (uid: number) => request<{uid: number}, getUserDetailRes>(`/user/detail?uid=${uid}`, 'get')
+export const getUserDetail = (uid: number) =>
+  request<{ uid: number }, getUserDetailRes>(`/user/detail?uid=${uid}`, 'get')
 
 // 获取账号信息
-export const getUserAccount = () => request<null, getUserAccountRes>('/user/account', 'get');
+export const getUserAccount = () => request<null, getUserAccountRes>('/user/account', 'get')
 
 // 获取歌手详情
-export const getArtistDetail = (id: number) => request<{id: number}, getArtistDetailRes>(`/artist/detail?id=${id}`, 'get')
+export const getArtistDetail = (id: number) =>
+  request<{ id: number }, getArtistDetailRes>(`/artist/detail?id=${id}`, 'get')
 
 // 获取用户绑定信息
 export const getUserBinding = (uid: number) => request(`/user/binding?uid=${uid}`)

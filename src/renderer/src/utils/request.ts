@@ -48,7 +48,8 @@ http.interceptors.response.use(
       status,
       data: { code }
     } = response
-    const url = response.config.url?.split('?')[0]!
+    // 使用 || '' 替代 ! 非空断言，避免可选链返回 undefined 时出错
+    const url = response.config.url?.split('?')[0] || ''
     if (!ignoreState.includes(url) && status !== 200 && code !== 200) {
       ElMessage.error(response.data.message || `请求出现错误，当前状态码为${code || status}`)
       return Promise.reject(response.data)
@@ -64,7 +65,7 @@ http.interceptors.response.use(
 )
 
 type Request = {
-  <R = unknown, D = any>(config: AxiosRequestConfig): Promise<D>
+  <D = any>(config: AxiosRequestConfig): Promise<D>
   <R = unknown, D = any>(
     url: string,
     method?: Method,
@@ -73,13 +74,14 @@ type Request = {
   <R = unknown, D = any>(url: string, data: R, method?: Method): Promise<D>
   <R = unknown, D = any>(url: string, data: R, config?: AxiosRequestConfig): Promise<D>
 }
-type Url<R> = AxiosRequestConfig | string
+type Url = AxiosRequestConfig | string
 type Config<R> =
   | (AxiosRequestConfig & { data: R; params: R })
   | undefined
   | Method
   | AxiosRequestConfig
-const request: Request = <R, D>(url: Url<R>, method?: unknown | Method, config?: Config<R>) => {
+// D 仅用于类型提示，实际不参与运算，无需声明
+const request: Request = <R>(url: Url, method?: unknown | Method, config?: Config<R>) => {
   if (typeof url !== 'string') {
     return http(url)
   } else if (method === undefined) {

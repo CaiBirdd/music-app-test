@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-// @ts-nocheck
 import { ref, onUnmounted } from 'vue'
 import { loginQrCheck, loginQrCreate, loginQrKey } from '@/api/login'
 import { ElMessage } from 'element-plus'
@@ -11,9 +10,9 @@ const key = ref('')
 const qrUrl = ref('')
 const flag = ref(false) // 是否授权中
 const isSucceed = ref(false)
-let timer: NodeJS.Timer
+let timer: NodeJS.Timeout
 const mode = ref<'qr' | 'phone'>('qr')
-const passVisible = ref(true)
+// 原代码: const passVisible = ref(true) - 已删除，未使用
 const phoneNumber = ref('') // 手机号输入
 const isPhoneValid = ref(false) // 手机号是否有效
 const sendCodeLoading = ref(false)
@@ -33,7 +32,8 @@ const init = async () => {
 
   timer = setInterval(async () => {
     // 800二维码不存在或已过期 801等待扫码  802授权中 803授权登陆成功
-    const { code, message, cookie } = await loginQrCheck(key.value)
+    // 原代码: const { code, message, cookie } - message未使用已删除
+    const { code, cookie } = await loginQrCheck(key.value)
     if (code === 800) {
       clearInterval(timer)
       init()
@@ -100,10 +100,12 @@ const handleOtpFinish = async (value: string) => {
     otpLoading.value = true
     await codeLogin(phoneNumber.value, value)
     dialogVisible.value = false
-    close(dialogVisible)
+    // 原代码: close(dialogVisible) - 修改为 close()，因为 close 函数无需参数
+    close()
   } catch {
+    // 登录失败，用户可以重试（原代码为空catch块）
   } finally {
-    otpLoading.value = false  
+    otpLoading.value = false
   }
 }
 
@@ -114,24 +116,27 @@ defineExpose({
 </script>
 
 <template>
-  <v-dialog scrim="rgba(0,0,0,1)" @update:model-value="close" v-model="dialogVisible" width="auto" :persistent="true">
+  <v-dialog
+    v-model="dialogVisible"
+    scrim="rgba(0,0,0,1)"
+    width="auto"
+    :persistent="true"
+    @update:model-value="close"
+  >
     <v-card v-if="mode === 'qr'" title="扫码登录" class="relative">
       <!-- 右上角关闭按钮 -->
+      <!-- 原代码: @click="() => { dialogVisible = false; close(dialogVisible) }" -->
+      <!-- 简化为直接设置 dialogVisible，关闭会由 @update:model-value 触发 -->
       <v-btn
         icon="mdi-close"
         variant="text"
         size="small"
         class="close-btn"
-        @click="
-          () => {
-            dialogVisible = false
-            close(dialogVisible)
-          }
-        "
+        @click="dialogVisible = false"
       />
 
       <div class="login-container">
-        <img v-if="!flag" :src="qrUrl" alt="" id="qr-img" />
+        <img v-if="!flag" id="qr-img" :src="qrUrl" alt="" />
         <h1 v-else>{{ isSucceed ? '授权登陆成功' : '授权中...' }}</h1>
 
         <div class="desc">使用网易云音乐APP扫码登录</div>
@@ -147,30 +152,25 @@ defineExpose({
           </a>
         </v-card-text>
       </div>
-      <template v-slot:actions>
-
-      </template>
+      <template #actions> </template>
     </v-card>
     <v-card
-      width="400"
       v-else
+      width="400"
       class="mx-auto pa-12 pb-8 relative"
       elevation="8"
       max-width="448"
       rounded="lg"
     >
       <!-- 右上角关闭按钮 -->
+      <!-- 原代码: @click="() => { dialogVisible = false; close(dialogVisible) }" -->
+      <!-- 简化为直接设置 dialogVisible，关闭会由 @update:model-value 触发 -->
       <v-btn
         icon="mdi-close"
         variant="text"
         size="small"
         class="close-btn"
-        @click="
-          () => {
-            dialogVisible = false
-            close(dialogVisible)
-          }
-        "
+        @click="dialogVisible = false"
       />
 
       <template v-if="!isSendCode">
@@ -183,13 +183,26 @@ defineExpose({
             placeholder="请输入手机号"
             prepend-inner-icon="mdi-phone-outline"
             variant="outlined"
-            @update:modelValue="handlePhoneInput"
-            :rules="[v => !!v || '请输入手机号', v => validatePhone(v) || '请输入正确的手机号格式']"
+            :rules="[
+              (v) => !!v || '请输入手机号',
+              (v) => validatePhone(v) || '请输入正确的手机号格式'
+            ]"
+            @update:model-value="handlePhoneInput"
           ></v-text-field>
         </div>
 
-        <v-btn  @click="sendCode" :disabled="!isPhoneValid" :loading="sendCodeLoading" class="mb-8" color="blue" size="large" variant="tonal" block> 获取验证码 </v-btn>
-
+        <v-btn
+          :disabled="!isPhoneValid"
+          :loading="sendCodeLoading"
+          class="mb-8"
+          color="blue"
+          size="large"
+          variant="tonal"
+          block
+          @click="sendCode"
+        >
+          获取验证码
+        </v-btn>
       </template>
 
       <template v-else>
@@ -201,17 +214,22 @@ defineExpose({
           class="back-btn"
           @click="isSendCode = false"
         />
-        
-        <v-sheet
-          width="100%"
-        >
+
+        <v-sheet width="100%">
           <h3 class="text-h6 mb-1">手机验证</h3>
 
           <div class="text-body-2 font-weight-light">
-            输入刚刚发送到你手机号的验证码 <span class="font-weight-black text-primary">{{ phoneNumber }}</span>
+            输入刚刚发送到你手机号的验证码
+            <span class="font-weight-black text-primary">{{ phoneNumber }}</span>
           </div>
 
-          <v-otp-input  divider=" " :length="4" @finish="handleOtpFinish" v-model="otp" :loading="otpLoading"></v-otp-input>
+          <v-otp-input
+            v-model="otp"
+            divider=" "
+            :length="4"
+            :loading="otpLoading"
+            @finish="handleOtpFinish"
+          ></v-otp-input>
 
           <div class="mt-3 mb-6"></div>
 
@@ -224,7 +242,7 @@ defineExpose({
         <a
           class="text-blue text-decoration-none"
           rel="noopener noreferrer"
-          style="cursor: pointer;display: flex;align-content: center;justify-content: center;"
+          style="cursor: pointer; display: flex; align-content: center; justify-content: center"
           @click="setMode('qr')"
         >
           扫码登录<v-icon icon="mdi-chevron-right"></v-icon>

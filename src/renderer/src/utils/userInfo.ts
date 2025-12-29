@@ -1,10 +1,10 @@
-import {getUserAccount} from "@/api/user";
-import {useUserInfo} from "@/store";
-import {getUserPlayList} from "@/api/musicList";
+import { getUserAccount } from '@/api/user'
+import { useUserInfo } from '@/store'
+import { getUserPlayList } from '@/api/musicList'
 
 // 获取用户信息
 export const getUserAccountFn = async () => {
-  const data = await getUserAccount();
+  const data = await getUserAccount()
   const store = useUserInfo()
   store.updateProfile(data.profile)
   getUserPlayListFn()
@@ -16,7 +16,7 @@ export const getUserPlayListFn = async () => {
   let uid: number | null = null
   uid = store.profile.userId && Number(localStorage.getItem('userId'))
 
-  if(uid) {
+  if (uid) {
     const data = await getUserPlayList(uid)
     store.updateUserPlayList(data.playlist)
   }

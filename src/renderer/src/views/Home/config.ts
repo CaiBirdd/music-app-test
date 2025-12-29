@@ -35,5 +35,5 @@ export const tabsConfig = [
     label: '最新音乐',
     name: 'newestMusic',
     component: NewestMusic
-  },
+  }
 ]

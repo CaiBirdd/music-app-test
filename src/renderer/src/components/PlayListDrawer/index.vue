@@ -1,11 +1,9 @@
 <script setup lang="ts">
-// @ts-nocheck
 import SongList from '@/components/SongList/index.vue'
 import { computed } from 'vue'
 import { columns } from '@/components/PlayListDrawer/config'
 import { playListState } from '@/layout/BaseAside/usePlayList'
 import { useMusicAction } from '@/store/music'
-import { useTheme } from '@/store/theme'
 
 interface Props {
   modelValue: boolean
@@ -13,7 +11,6 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['update:modelValue'])
 const music = useMusicAction()
-const theme = useTheme()
 
 const setModelValue = computed({
   get() {
@@ -26,7 +23,7 @@ const setModelValue = computed({
 </script>
 
 <template>
-  <div @click.stop :class="['drawer', { 'open-drawer': setModelValue }]">
+  <div :class="['drawer', { 'open-drawer': setModelValue }]" @click.stop>
     <div class="head">
       <div class="left">
         <span class="text">播放列表</span>
@@ -34,16 +31,16 @@ const setModelValue = computed({
       </div>
     </div>
     <SongList
-      @play="music.getMusicUrlHandler"
-      :columns="columns"
+      :columns="columns as any"
       :loading="playListState.loading"
-      :songs="music.state.songs"
+      :songs="music.state.songs as any"
       :ids="music.state.runtimeIds"
       :list="music.state.runtimeList?.tracks || []"
       :list-info="music.state.runtimeList"
       :lazy="true"
       :is-need-title="false"
       :scroll="true"
+      @play="music.getMusicUrlHandler"
     />
   </div>
 </template>

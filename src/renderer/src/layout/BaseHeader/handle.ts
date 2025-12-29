@@ -2,7 +2,7 @@ import { useFlags } from '@/store/flags'
 import { isElectron } from '@/utils'
 
 // 定义 ipcRenderer 变量
-let ipcRenderer = null
+const ipcRenderer = null
 
 // 使用异步函数来处理 ipcRenderer 的动态导入
 // const loadIpcRenderer = async () => {

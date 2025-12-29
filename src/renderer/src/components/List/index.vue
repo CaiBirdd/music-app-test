@@ -2,7 +2,7 @@
 interface Props {
   count: number
 }
-const props = defineProps<Props>()
+defineProps<Props>()
 </script>
 
 <template>
@@ -11,6 +11,4 @@ const props = defineProps<Props>()
   </div>
 </template>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

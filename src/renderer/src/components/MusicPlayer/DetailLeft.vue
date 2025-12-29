@@ -42,32 +42,32 @@ const gotoComment = () => {
 
 <template>
   <div v-show="!flags.isOpenDetail" class="left">
-    <div @click="openMusicDetail" class="picture-box">
+    <div class="picture-box" @click="openMusicDetail">
       <div
         :style="{ backgroundImage: `url(${props.songs.al?.picUrl + '?param=150y150'})` }"
         class="picture"
       ></div>
       <div class="shade-box"></div>
-      <el-icon :size="25" @click="closeMusicDetail" class="close np-drag"><ArrowDown /></el-icon>
+      <el-icon :size="25" class="close np-drag" @click="closeMusicDetail"><ArrowDown /></el-icon>
     </div>
 
     <div class="name-info">
       <span class="song-name">{{ props.songs.name }}</span>
       <div class="name-container">
-        <template v-for="(item, i) in props.songs.ar">
+        <template v-for="(item, i) in props.songs.ar" :key="item.id">
           <span class="name">{{ item.name }}</span>
           <span v-if="i === 0 && i !== props.songs.ar.length - 1">/</span>
         </template>
       </div>
     </div>
-    <i v-if="isLike" @click="likeMusic(id, false)" class="iconfont icon-xihuan1"></i>
-    <i v-else @click="likeMusic(id)" class="iconfont icon-xihuan"></i>
+    <i v-if="isLike" class="iconfont icon-xihuan1" @click="likeMusic(id, false)"></i>
+    <i v-else class="iconfont icon-xihuan" @click="likeMusic(id)"></i>
   </div>
   <div v-show="flags.isOpenDetail" class="left detail-left">
-    <el-icon :size="25" @click="closeMusicDetail" class="close np-drag"><ArrowDown /></el-icon>
-    <i v-if="isLike" @click="likeMusic(id, false)" class="iconfont icon-xihuan1"></i>
-    <i v-else @click="likeMusic(id)" class="iconfont icon-xihuan"></i>
-    <el-icon style="cursor: pointer" @click="gotoComment" :size="20"><ChatDotSquare /></el-icon>
+    <el-icon :size="25" class="close np-drag" @click="closeMusicDetail"><ArrowDown /></el-icon>
+    <i v-if="isLike" class="iconfont icon-xihuan1" @click="likeMusic(id, false)"></i>
+    <i v-else class="iconfont icon-xihuan" @click="likeMusic(id)"></i>
+    <el-icon style="cursor: pointer" :size="20" @click="gotoComment"><ChatDotSquare /></el-icon>
     <div class="more">
       <el-icon :size="10"><MoreFilled /></el-icon>
     </div>

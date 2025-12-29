@@ -11,13 +11,18 @@ const emit = defineEmits(['setOrderHandler', 'cutSong', 'pause', 'play'])
 <template>
   <div class="center">
     <div class="cut-container">
-      <svg @click="emit('setOrderHandler')" style="width: 20px" :class="['icon', 'iconfont', props.orderStatus[orderStatusVal]]" aria-hidden="true">
-        <use :xlink:href="'#'+props.orderStatus[orderStatusVal]"></use>
+      <svg
+        style="width: 20px"
+        :class="['icon', 'iconfont', props.orderStatus[orderStatusVal]]"
+        aria-hidden="true"
+        @click="emit('setOrderHandler')"
+      >
+        <use :xlink:href="'#' + props.orderStatus[orderStatusVal]"></use>
       </svg>
-      <i @click="emit('cutSong', false)" class="iconfont cut icon-shangyishou"></i>
-      <i v-show="isPlay"  @click="$emit('pause')" class="iconfont operation icon-Pause"></i>
-      <i v-show="!isPlay" @click="$emit('play', false)" class="iconfont operation icon-kaishi1"></i>
-      <i @click="emit('cutSong', true)" class="iconfont cut icon-xiayishou"></i>
+      <i class="iconfont cut icon-shangyishou" @click="emit('cutSong', false)"></i>
+      <i v-show="isPlay" class="iconfont operation icon-Pause" @click="$emit('pause')"></i>
+      <i v-show="!isPlay" class="iconfont operation icon-kaishi1" @click="$emit('play', false)"></i>
+      <i class="iconfont cut icon-xiayishou" @click="emit('cutSong', true)"></i>
     </div>
   </div>
 </template>

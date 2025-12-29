@@ -20,7 +20,6 @@ const audioInstance = ref<MusicPlayerInstanceType>()
 const login = ref()
 const music = useMusicAction()
 const flags = useFlags()
-const route = useRoute()
 const store = useUserInfo()
 const settings = useSettings()
 const refresh = ref(0) // 登录完成后强制刷新组件
@@ -47,7 +46,7 @@ onMounted(() => {
 store.addEvent('login', () => {
   refresh.value = refresh.value + 1
 })
- getUserAccountFn()
+getUserAccountFn()
 </script>
 
 <template>
@@ -62,7 +61,7 @@ store.addEvent('login', () => {
         <Header></Header>
         <div class="body">
           <router-view v-slot="{ Component }">
-            <component :key="refresh" :is="Component"></component>
+            <component :is="Component" :key="refresh"></component>
           </router-view>
         </div>
       </div>
@@ -74,10 +73,10 @@ store.addEvent('login', () => {
       <teleport :disabled="!flags.isOpenDetail" to=".music-detail-container .music-detail-bottom">
         <MusicPlayer
           ref="audioInstance"
-          @cutSong="music.cutSongHandler"
-          @playEnd="music.playEnd"
           :songs="music.state?.songs"
           :src="music.state.musicUrl"
+          @cut-song="music.cutSongHandler"
+          @play-end="music.playEnd"
         ></MusicPlayer>
       </teleport>
     </template>

@@ -6,31 +6,23 @@ import { getUserPlayListFn } from '@/utils/userInfo'
 
 // 发送验证码
 export const sendCodePhone = async (phone: string) => {
-  try {
-    const { data } = await captchaLogin(phone)
-    if (data) {
-      ElMessage.success('验证码已发送')
-    }
-  } catch (e: any) {
-    throw e
+  const { data } = await captchaLogin(phone)
+  if (data) {
+    ElMessage.success('验证码已发送')
   }
 }
 
 // 验证码登录
 export const codeLogin = async (phone: string, code: string): Promise<any> => {
-  try {
-    const data = await phoneLogin(phone, code)
-    const store = useUserInfo()
-    store.updateProfile(data.profile)
-    ElMessage.success('登录成功')
-    localStorage.setItem('token', data.token)
-    setCookies(data.cookie)
-    getUserPlayListFn()
-    store.loginCallBack()
-    return data
-  } catch (e: any) {
-    throw e
-  }
+  const data = await phoneLogin(phone, code)
+  const store = useUserInfo()
+  store.updateProfile(data.profile)
+  ElMessage.success('登录成功')
+  localStorage.setItem('token', data.token)
+  setCookies(data.cookie)
+  getUserPlayListFn()
+  store.loginCallBack()
+  return data
 }
 
 export const useAnonimousLogin = async () => {
@@ -39,5 +31,7 @@ export const useAnonimousLogin = async () => {
     if (cookie) {
       localStorage.setItem(`MUSIC_U`, cookie)
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('游客登录失败', e)
+  }
 }
