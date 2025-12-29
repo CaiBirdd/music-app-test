@@ -13,12 +13,12 @@
 
 ### 配置与插件
 
-| 包名                                       | 作用                                                                          |
-| ------------------------------------------ | ----------------------------------------------------------------------------- |
-| `@electron-toolkit/eslint-config-prettier` | **桥接包** - 让 ESLint 和 Prettier 协作，关闭 ESLint 中与 Prettier 冲突的规则 |
-| `@electron-toolkit/eslint-config-ts`       | ESLint 的 TypeScript 规则配置                                                 |
-| `eslint-plugin-vue`                        | ESLint 的 Vue 规则插件                                                        |
-| `vue-eslint-parser`                        | Vue 文件的 ESLint 解析器                                                      |
+| 包名                                       | 版本    | 作用                                                                          |
+| ------------------------------------------ | ------- | ----------------------------------------------------------------------------- |
+| `@electron-toolkit/eslint-config-prettier` | 3.0.0   | **桥接包** - 让 ESLint 和 Prettier 协作，关闭 ESLint 中与 Prettier 冲突的规则 |
+| `@electron-toolkit/eslint-config-ts`       | ^3.1.0  | ESLint 的 TypeScript 规则配置                                                 |
+| `eslint-plugin-vue`                        | ^10.6.2 | ESLint 的 Vue 规则插件                                                        |
+| `vue-eslint-parser`                        | ^10.2.0 | Vue 文件的 ESLint 解析器                                                      |
 
 ---
 
@@ -57,7 +57,10 @@ export default defineConfig(
   // 忽略目录及 linter 选项配置
   {
     ignores: ['**/node_modules', '**/dist', '**/out'],
-    // 注意：reportUnusedDisableDirectives 必须放在 linterOptions 中（ESLint 9.x flat config 要求）
+    // 修复 ESLint 9.x 扁平配置格式错误
+    // reportUnusedDisableDirectives 在扁平配置中必须放在 linterOptions 对象中
+    // 旧写法（eslintrc 格式）：reportUnusedDisableDirectives: 'off'
+    // 新写法（flat config 格式）：linterOptions.reportUnusedDisableDirectives
     linterOptions: {
       reportUnusedDisableDirectives: 'off'
     }
@@ -88,7 +91,14 @@ export default defineConfig(
     rules: {
       'vue/require-default-prop': 'off',
       'vue/multi-word-component-names': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
+      'vue/require-v-for-key': 'warn', //  v-for 必须有 key 的检查 warn
+      '@typescript-eslint/no-explicit-any': 'off', // 关闭禁止使用 any 的规则
+      '@typescript-eslint/explicit-function-return-type': 'off', // 关闭函数必须写返回类型的规则
+      '@typescript-eslint/no-unused-vars': 'warn', // 关闭未使用的变量检查
+      'no-unused-vars': 'off', // 关闭未使用的变量检查
+      'no-undef': 'off', // 关闭未定义变量检查（TypeScript 会处理这个）
+      '@typescript-eslint/ban-ts-comment': 'off', // 允许使用 @ts-ignore 等注释
+      '@typescript-eslint/no-non-null-assertion': 'off', // 允许使用非空断言
       'vue/block-lang': ['error', { script: { lang: 'ts' } }]
     }
   },
@@ -113,6 +123,8 @@ export default defineConfig(
 }
 ```
 
+> ⚠️ **注意**：原配置中 TypeScript 使用的是 `rvest.vs-code-prettier-eslint` 插件，已更改为 `esbenp.prettier-vscode`，避免格式化失效问题。
+
 ---
 
 ## 🔄 工作流程
@@ -135,11 +147,20 @@ ESLint 检查代码规范
 ## 🛠️ 常用命令
 
 ```bash
-# 格式化所有文件
+# 格式化所有文件（根据 package.json）
 pnpm format
+# 或
+npm run format
 
-# 检查 ESLint 错误
+# 检查 ESLint 错误（根据 package.json）
 pnpm lint
+# 或
+npm run lint
+
+# 类型检查
+pnpm typecheck
+# 或
+npm run typecheck
 ```
 
 ---
@@ -203,15 +224,34 @@ export default defineConfig({
 })
 ```
 
+### Q6: 项目中关闭了哪些 ESLint 规则？
+
+项目根据实际开发需求，关闭或调整了以下 ESLint 规则：
+
+- `vue/require-default-prop`: 关闭 - Vue props 不强制要求默认值
+- `vue/multi-word-component-names`: 关闭 - 允许单个单词的组件名
+- `vue/require-v-for-key`: 警告 - v-for 的 key 提示为警告而非错误
+- `@typescript-eslint/no-explicit-any`: 关闭 - 允许使用 any 类型
+- `@typescript-eslint/explicit-function-return-type`: 关闭 - 函数不强制写返回类型
+- `@typescript-eslint/no-unused-vars`: 警告 - 未使用的变量改为警告
+- `no-unused-vars`: 关闭 - 使用 TypeScript 的规则
+- `no-undef`: 关闭 - TypeScript 会处理未定义变量
+- `@typescript-eslint/ban-ts-comment`: 关闭 - 允许使用 @ts-ignore 等注释
+- `@typescript-eslint/no-non-null-assertion`: 关闭 - 允许使用非空断言 (!)
+- `vue/block-lang`: 错误 - 强制 Vue 的 script 使用 TypeScript
+
 ---
 
 ## 📝 版本兼容性说明
 
-| 工具     | 版本 | 注意事项                            |
-| -------- | ---- | ----------------------------------- |
-| Vue      | 3.4+ | CSS v-bind 增加严格类型检查         |
-| ESLint   | 9.x  | 使用扁平化配置 (eslint.config.mjs)  |
-| Prettier | 3.x  | 配置文件支持 .yaml/.json/.js 等格式 |
+| 工具       | 版本    | 注意事项                            |
+| ---------- | ------- | ----------------------------------- |
+| Vue        | ^3.5.25 | CSS v-bind 增加严格类型检查         |
+| ESLint     | ^9.39.1 | 使用扁平化配置 (eslint.config.mjs)  |
+| Prettier   | ^3.7.4  | 配置文件支持 .yaml/.json/.js 等格式 |
+| TypeScript | ^5.9.3  | 最新稳定版本                        |
+| vue-tsc    | ^3.1.6  | Vue 的 TypeScript 类型检查工具      |
+| Electron   | ^39.2.6 | Electron 框架                       |
 
 ---
 
