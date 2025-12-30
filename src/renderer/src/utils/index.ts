@@ -109,17 +109,6 @@ export function toggleImg(src: string, size?: string): Promise<HTMLImageElement>
   })
 }
 
-// 计算出合适的间隙
-// div, [div,div,div], 3 => 10px
-export function suitableSpace(el: Element, itemEl: Element, count: number): number {
-  const totalWidth = el.clientWidth
-  const itemWidth = itemEl.clientWidth * count
-  const width = totalWidth - itemWidth
-  const suitableMargin = width / (count - 1)
-
-  return suitableMargin - 1
-}
-
 // 是否处于今天
 export function calculateIsToday(timestamp: number): boolean {
   // 把今天的日期时分秒设置为00:00:00, 返回一个时间戳
@@ -267,38 +256,6 @@ export function findBestColors(
   return bestColors
 }
 
-// 获取屏幕刷新率
-export const getScreenFps = (() => {
-  // 先做一下兼容性处理
-  const nextFrame = [
-    window.requestAnimationFrame,
-    (window as any).webkitRequestAnimationFrame,
-    (window as any).mozRequestAnimationFrame
-  ].find((fn) => fn)
-  if (!nextFrame) {
-    console.error('requestAnimationFrame is not supported!')
-    return
-  }
-  return (targetCount = 50) => {
-    // 判断参数是否合规
-    if (targetCount < 1) throw new Error('targetCount cannot be less than 1.')
-    const beginDate = Date.now()
-    let count = 0
-    return new Promise((resolve) => {
-      ;(function log() {
-        nextFrame(() => {
-          if (++count >= targetCount) {
-            const diffDate = Date.now() - beginDate
-            const fps = (count / diffDate) * 1000
-            return resolve(fps)
-          }
-          log()
-        })
-      })()
-    })
-  }
-})()
-
 export const isElectron = () => {
   // darwin: macOS 操作系统
   // linux: Linux 操作系统
@@ -328,21 +285,6 @@ export function formatNumberToMillion(number: number) {
     return `${millionNumber}万`
   } else {
     return number.toString() // 数字小于 1 万，不需要处理
-  }
-}
-
-export const debounce = (func: (...args: any[]) => void, delay: number) => {
-  let timerId: ReturnType<typeof setTimeout> | null = null
-
-  return function (this: any, ...args: any[]) {
-    if (timerId) {
-      clearTimeout(timerId)
-    }
-
-    timerId = setTimeout(() => {
-      func.apply(this, args)
-      timerId = null
-    }, delay)
   }
 }
 

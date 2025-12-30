@@ -1,5 +1,4 @@
 <script setup lang="ts" name="Header">
-import { useUserInfo } from '@/store'
 import Search from '@/components/Search/index.vue'
 import { handle } from '@/layout/BaseHeader/handle'
 import { useFlags } from '@/store/flags'
@@ -8,10 +7,9 @@ import { computed } from 'vue'
 import { isElectron } from '@/utils'
 
 const flags = useFlags()
-const store = useUserInfo()
 const router = useRouter()
 const route = useRoute()
-const { maximize, unmaximize, minimize, restore, close } = handle()
+const { maximize, unmaximize, minimize, close } = handle()
 
 const maximizeOrUnmaximize = () => {
   flags.isMaximize ? unmaximize() : maximize()

@@ -104,7 +104,7 @@ const arNames = computed(() => {
           "
         >
           {{ props.title }} -
-          <span v-for="(item, index) in props.ar"
+          <span v-for="(item, index) in props.ar" :key="item.id"
             >{{ item.name }} <span v-if="props.ar.length - 1 !== index">/</span></span
           >
         </div>
