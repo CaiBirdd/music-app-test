@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * 音乐播放进度条组件
+ * - 未展开详情页：红色细线样式（1px）
+ * - 展开详情页后：渐变色样式（6px），颜色从专辑封面提取
+ */
 import { computed } from 'vue'
 import { GetMusicDetailData } from '@/api/musicList'
 import { useMusicAction } from '@/store/music'
@@ -11,15 +16,27 @@ const props = defineProps<Props>()
 const music = useMusicAction()
 const flags = useFlags()
 
+/**
+ * 进度条双向绑定值（0-100）
+ * 使用 songs.dt（歌曲元数据时长，毫秒）替代 audio.duration
+ * 原因：window.$audio.el.duration 在某些时机获取不到正确值
+ */
 const model = computed<number>({
   get() {
-    return (music.state.currentTime / window.$audio?.el.duration) * 100
+    const duration = props.songs.dt // 毫秒
+    if (!duration) return 0
+    // currentTime（秒）转毫秒后计算百分比
+    return ((music.state.currentTime * 1000) / duration) * 100
   },
   set(val) {
-    window.$audio.time = (val * window.$audio?.el.duration) / 100
+    const duration = props.songs.dt // 毫秒
+    if (!duration) return
+    // 百分比转秒，设置播放位置
+    window.$audio.time = (val * duration) / 100 / 1000
   }
 })
 
+// 渐变色（从专辑封面提取，默认红色）
 const gradientColor1 = computed(() =>
   music.state.bgColor[1] ? `rgb(${music.state.bgColor[1]})` : 'rgb(236, 65, 65)'
 )
@@ -40,13 +57,6 @@ const gradientColor2 = computed(() =>
     }"
   >
     <v-slider v-model="model"></v-slider>
-    <!--        <el-slider-->
-    <!--          v-model="model"-->
-    <!--          @change="change"-->
-    <!--          :show-tooltip="false"-->
-    <!--          :show-stops="false"-->
-    <!--          :step="0.000001"-->
-    <!--        />-->
   </div>
 </template>
 
@@ -70,6 +80,7 @@ const gradientColor2 = computed(() =>
 }
 </style>
 <style lang="scss">
+/* 未展开详情页样式：红色细线 */
 .base-progress-bar.view-progress {
   height: 31px;
   .v-input {
@@ -81,6 +92,8 @@ const gradientColor2 = computed(() =>
     border-radius: 0;
   }
 }
+
+/* 通用样式：隐藏不需要的元素 */
 .base-progress-bar {
   .v-input__details {
     display: none;
@@ -90,6 +103,7 @@ const gradientColor2 = computed(() =>
   }
 }
 
+/* 展开详情页样式：渐变色效果 */
 .base-progress-bar.detail-progress {
   height: 30px;
   .v-slider-track__fill {

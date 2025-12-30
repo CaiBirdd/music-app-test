@@ -11,7 +11,7 @@ import {
   updateScrobble
 } from '@/api/musicList'
 import { watch, reactive } from 'vue'
-import { parseLrc, parseYrc } from '@lrc-player/parse'
+import { parseLRC } from '@/utils/lyric'
 import { randomNum } from '@/utils'
 
 export type Lyric = { time: number | boolean; text: string; line: number }
@@ -23,7 +23,7 @@ interface State {
   runtimeIds: number[]
   lyric: any
   currentTime: 0
-  lrcMode: 0 | 1
+  noTimestamp: boolean
   // 原代码: bgColor: Array<Array<string>>
   bgColor: string[]
   videoPlayUrl: string | null
@@ -45,7 +45,7 @@ export const useMusicAction = defineStore('musicActionId', () => {
     runtimeIds: [], // 用户当前正在播放音乐的列表ids
     lyric: [],
     currentTime: 0,
-    lrcMode: 1,
+    noTimestamp: false,
     bgColor: [], // 当前正在播放的音乐主题色
     videoPlayUrl: '',
     orderStatusVal: 0,
@@ -85,18 +85,12 @@ export const useMusicAction = defineStore('musicActionId', () => {
   }
   // 获取歌词
   const getLyricHandler = async (id: number) => {
-    const { lrc, yrc } = await getLyric(id)
-    // 首先对歌词进行格式化处理
-    // {time: number(s), text: string}
-    if (yrc && yrc.lyric) {
-      state.lyric = parseLrc(yrc.lyric)
-      state.lrcMode = 1
-    } else {
-      state.lyric = parseYrc(lrc.lyric)
-      state.lrcMode = 0
-      if (state.lyric.length === 1) {
-        state.lyric = []
-      }
+    const { lrc } = await getLyric(id)
+    const result = parseLRC(lrc.lyric)
+    state.lyric = result.lines
+    state.noTimestamp = result.noTimestamp
+    if (state.lyric.length === 1) {
+      state.lyric = []
     }
   }
   const updateState = (data) => {

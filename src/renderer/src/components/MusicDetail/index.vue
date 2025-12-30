@@ -48,7 +48,6 @@ onUnmounted(() => {
         <div class="music-detail-container">
           <LyricDisplay
             :lyric="music.state.lyric"
-            :lrc-mode="music.state.lrcMode"
             :bg="bg"
             :title="music.state.songs.name"
             :ar="music.state.songs.ar"

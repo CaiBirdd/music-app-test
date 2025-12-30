@@ -12,18 +12,6 @@ export function formattingTime(msec: number, isMsec = true) {
   return result
 }
 
-export type Yrc = {
-  time: number
-  duration: number
-  line: number
-  yrc: Array<{
-    text: string
-    transition: number
-    cursor: number
-    width: number | string
-  }>
-}
-
 // 随机产生指定范围数
 export function randomNum(minNum: number, maxNum: number, decimals = false) {
   if (decimals) {

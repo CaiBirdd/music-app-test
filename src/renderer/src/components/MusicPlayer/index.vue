@@ -9,8 +9,8 @@ import DetailCenter from '@/components/MusicPlayer/DetailCenter.vue'
 import DetailRight from '@/components/MusicPlayer/DetailRight.vue'
 import { ListenerName, useListener } from '@/components/MusicPlayer/listener'
 import usePlayList, { playListState } from '@/layout/BaseAside/usePlayList'
-import '@lrc-player/core/dist/style.css'
-import Player from '@lrc-player/core'
+import { LyricPlayer } from '@/utils/lyric'
+import '@/utils/lyric/style.scss'
 
 const orderStatus = ['icon-xihuan5', 'icon-xunhuan', 'icon-suijibofang', 'icon-danquxunhuan']
 type userAudio = {
@@ -44,20 +44,33 @@ const music = useMusicAction()
 const transitionIsPlay = ref(false)
 const { addListener, executeListener } = useListener(audio)
 const { getPlayListDetailFn } = usePlayList()
-const player = new Player({
-  click
-})
-function click(time: number) {
-  audio.value!.currentTime = time
+let player: LyricPlayer | null = null
+
+function handleLyricClick(time: number) {
+  if (audio.value) {
+    audio.value.currentTime = time
+  }
 }
 function seeked() {
-  player.syncIndex()
+  player?.syncIndex()
+}
+function initPlayer() {
+  if (player) return
+  const container = document.querySelector('.lyric-container') as HTMLDivElement
+  if (container && audio.value) {
+    player = new LyricPlayer({
+      container,
+      audio: audio.value as unknown as HTMLAudioElement,
+      onLineClick: handleLyricClick
+    })
+  }
 }
 let originPlay: HTMLMediaElement['play']
 let originPause: HTMLMediaElement['pause']
 
 onMounted(() => {
-  player.mount(document.querySelector('.lyric-container') as HTMLDivElement, audio.value as any)
+  initPlayer()
+
   originPlay = audio.value!.play as HTMLMediaElement['play']
   originPause = audio.value!.pause as HTMLMediaElement['pause']
   // 播放，音量过渡提高
@@ -66,7 +79,6 @@ onMounted(() => {
   audio.value!.pause = pause as any
 
   audio.value?.addEventListener('error', (event: any) => {
-    // console.log('event.target.error', event.target.error)
     if (event.target.error.code === 4) {
       //
     }
@@ -78,15 +90,14 @@ function play(lengthen: boolean = false) {
     cutSongHandler()
     music.state.load = false
   }
-  player.play()
-  audio.value!.volume = 0
-  originPlay.call(audio.value).catch((err) => {
-    console.error('调用origin.play方法时抛出了错误：', err)
+  player?.play()
+  if (!audio.value) return Promise.resolve(undefined)
+  audio.value.volume = 0
+  originPlay.call(audio.value).catch(() => {
+    // 音频源无效时静默处理
   })
   isPlay.value = true
   timeState.stop = false
-
-  console.log('music.state.load', music.state.load)
 
   // 开始时直接改变就可以，让逐字歌词跟得上
   transitionIsPlay.value = true
@@ -98,7 +109,7 @@ function pause(isNeed: boolean = true, lengthen: boolean = false) {
   // 这个时候会先调用pause暂停上一首进行过渡，然后在调用play播放，这个时候就不需要更新暂停标识
   isNeed && (isPlay.value = false)
   return transitionVolume(volume, false, lengthen).then(() => {
-    player.pause()
+    player?.pause()
     // 暂停时应该等待音量过渡完成在改变，让逐字歌词也有一个暂停过渡效果
     transitionIsPlay.value = false
   })
@@ -115,10 +126,19 @@ function transitionVolume(
   const playVolume = lengthen ? 40 : 15
   const pauseVolume = lengthen ? 20 : 10
   return new Promise((resolve) => {
+    if (!audio.value) {
+      resolve(undefined)
+      return
+    }
     if (target) {
       timer = setInterval(() => {
-        audio.value!.volume = Math.min(audio.value!.volume + volume / playVolume, volume)
-        if (audio.value!.volume >= volume) {
+        if (!audio.value) {
+          clearInterval(timer)
+          resolve(undefined)
+          return
+        }
+        audio.value.volume = Math.min(audio.value.volume + volume / playVolume, volume)
+        if (audio.value.volume >= volume) {
           resolve(undefined)
           clearInterval(timer)
         }
@@ -126,11 +146,16 @@ function transitionVolume(
       return
     }
     timer = setInterval(() => {
-      audio.value!.volume = Math.max(audio.value!.volume - volume / pauseVolume, 0)
-      if (audio.value!.volume <= 0) {
+      if (!audio.value) {
+        clearInterval(timer)
+        resolve(undefined)
+        return
+      }
+      audio.value.volume = Math.max(audio.value.volume - volume / pauseVolume, 0)
+      if (audio.value.volume <= 0) {
         clearInterval(timer)
         originPause.call(audio.value)
-        audio.value!.volume = volume
+        audio.value.volume = volume
         resolve(undefined)
       }
     }, 50)
@@ -142,11 +167,12 @@ const timeState = reactive({
   previousTime: 0 // 新增属性来保存旧的 currentTime
 })
 
+/**
+ * 音频时间更新回调
+ * 注意：不依赖 audio.duration（可能获取不到），只更新 currentTime
+ */
 const timeupdate = () => {
-  if (timeState.stop || isNaN(window.$audio?.el.duration || 0)) {
-    return
-  }
-  // 在更新 currentTime 之前，保存旧的值
+  if (timeState.stop) return
   timeState.previousTime = music.state.currentTime
   if (window.$audio) {
     music.state.currentTime = window.$audio.time as any
@@ -189,8 +215,8 @@ const setOrderHandler = () => {
 
 // 执行切换事件，随后暂停time监听器，等待歌曲加载完成后会打开
 const cutSongHandler = () => {
-  const type = music.state.lrcMode === 1 ? 'lrc' : 'yrc'
-  player.updateAudioLrc(music.state.lyric, type)
+  initPlayer()
+  player?.setLyrics(music.state.lyric, music.state.noTimestamp)
   executeListener('cutSong')
 }
 

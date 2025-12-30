@@ -1,14 +1,13 @@
 ﻿<script lang="ts" setup>
-import { toggleImg, Yrc } from '@/utils'
-import { Lyric } from '@/store/music'
+import { toggleImg } from '@/utils'
+import type { LyricLine } from '@/utils/lyric'
 import { computed, nextTick, onMounted, useTemplateRef, watch } from 'vue'
 import gsap from 'gsap'
 import { useRouter } from 'vue-router'
 import { useFlags } from '@/store/flags'
 
 interface Props {
-  lyric: Lyric[] | Yrc[]
-  lrcMode: 1 | 0
+  lyric: LyricLine[]
   title: string
   bg?: string
   isBlur?: boolean
@@ -167,7 +166,7 @@ const arNames = computed(() => {
     }
     .lyric-container {
       height: 145%;
-      width: 40vw;
+      width: 42vw;
       border-radius: 5px;
       overflow: auto;
       mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
