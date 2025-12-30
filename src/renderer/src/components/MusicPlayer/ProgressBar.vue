@@ -19,6 +19,14 @@ const model = computed<number>({
     window.$audio.time = (val * window.$audio?.el.duration) / 100
   }
 })
+
+const gradientColor1 = computed(() =>
+  music.state.bgColor[1] ? `rgb(${music.state.bgColor[1]})` : 'rgb(236, 65, 65)'
+)
+
+const gradientColor2 = computed(() =>
+  music.state.bgColor[0] ? `rgb(${music.state.bgColor[0]})` : 'rgb(236, 65, 65)'
+)
 </script>
 
 <template>
@@ -26,6 +34,10 @@ const model = computed<number>({
     v-if="props.songs.ar"
     :class="['base-progress-bar', flags.isOpenDetail ? 'detail-progress' : 'view-progress']"
     style="width: 100%"
+    :style="{
+      '--gradient-color-1': gradientColor1,
+      '--gradient-color-2': gradientColor2
+    }"
   >
     <v-slider v-model="model"></v-slider>
     <!--        <el-slider-->
@@ -38,7 +50,7 @@ const model = computed<number>({
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 :deep(.el-slider__button-wrapper) {
   cursor: pointer !important;
   display: none;
@@ -57,7 +69,7 @@ const model = computed<number>({
   width: 100%;
 }
 </style>
-<style lang="less">
+<style lang="scss">
 .base-progress-bar.view-progress {
   height: 31px;
   .v-input {
@@ -78,23 +90,17 @@ const model = computed<number>({
   }
 }
 
-.music-detail-bottom {
-  .base-progress-bar.detail-progress {
-    height: 30px;
-    .v-slider-track__fill {
-      height: 6px;
-      background-image: linear-gradient(
-        to right,
-        rgb(v-bind('music.state.bgColor[1]')),
-        rgb(v-bind('music.state.bgColor[0]'))
-      );
-      opacity: 0.8;
-      border-radius: 6px;
-      background-color: transparent;
-    }
-    .v-input {
-      margin-inline: 0;
-    }
+.base-progress-bar.detail-progress {
+  height: 30px;
+  .v-slider-track__fill {
+    height: 6px;
+    background-image: linear-gradient(to right, var(--gradient-color-1), var(--gradient-color-2));
+    opacity: 0.8;
+    border-radius: 6px;
+    background-color: transparent;
+  }
+  .v-input {
+    margin-inline: 0;
   }
 }
 </style>

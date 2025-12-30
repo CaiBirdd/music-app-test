@@ -1,4 +1,4 @@
-<!-- 显示当前播放项（歌单/专辑）的信息卡片，
+﻿<!-- 显示当前播放项（歌单/专辑）的信息卡片，
  包括封面背景、播放量、名称、作者、创建时间、简介和若干操作按钮（播放全部、收藏、下载全部） -->
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
@@ -96,14 +96,14 @@ const gotoUserDetail = () => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .list-info {
   display: flex;
   padding: 0 35px;
 
   .left {
     //background-image: url("https://p1.music.126.net/9GAbSb_hlXPu66HWInJOww==/109951162846052486.jpg");
-    .bgSetting();
+    @extend .bgSetting;
     width: 220px;
     height: 220px;
     border-radius: 10px;
@@ -119,7 +119,7 @@ const gotoUserDetail = () => {
   .text-info-desc {
     font-size: 12px;
     margin-bottom: 5px;
-    .textOverflow(2);
+    @include textOverflow(2);
   }
   .right {
     margin-left: 20px;
@@ -129,7 +129,7 @@ const gotoUserDetail = () => {
     > div {
       display: flex;
       align-items: center;
-      color: @text;
+      color: $text;
     }
 
     .song-name {
@@ -142,8 +142,8 @@ const gotoUserDetail = () => {
         font-size: 13px;
         border-radius: 3px;
         padding: 0 5px;
-        color: @subject;
-        border: 1px solid @subject;
+        color: $subject;
+        border: 1px solid $subject;
         & + & {
           margin-left: 5px;
         }
@@ -158,7 +158,7 @@ const gotoUserDetail = () => {
         border-radius: 50%;
         width: 25px;
         height: 25px;
-        .bgSetting();
+        @extend .bgSetting;
         cursor: pointer;
       }
       .nickname {
@@ -169,7 +169,7 @@ const gotoUserDetail = () => {
         }
       }
       .create-timer {
-        color: @darkText;
+        color: $darkText;
       }
     }
     .song-handle {
@@ -184,10 +184,10 @@ const gotoUserDetail = () => {
       }
       > div {
         > span {
-          color: @darkText;
+          color: $darkText;
         }
         > :first-child {
-          color: @text;
+          color: $text;
         }
       }
     }

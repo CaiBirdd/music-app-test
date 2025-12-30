@@ -1,4 +1,4 @@
-<!-- 对elementplus的el-tabs做轻度包装 -->
+﻿<!-- 对elementplus的el-tabs做轻度包装 -->
 <script setup lang="ts" name="Tabs">
 import { computed } from 'vue'
 
@@ -27,10 +27,10 @@ const activeName = computed({
   </el-tabs>
 </template>
 
-<style lang="less">
+<style lang="scss">
 .bass-tabs.el-tabs {
   .el-tabs__active-bar {
-    background-color: @subject;
+    background-color: $subject;
     transition: 0.3s ease !important;
   }
   .el-tabs__item.is-active {
@@ -42,7 +42,7 @@ const activeName = computed({
     overflow: inherit;
   }
   .el-tabs__item {
-    color: @darkText;
+    color: $darkText;
     font-size: 16px;
     transition: font-size 0.1s;
   }

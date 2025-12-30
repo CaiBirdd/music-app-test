@@ -12,7 +12,7 @@ defineSlots<{
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .container {
   height: 75px;
   //background-color: rgb(26,26,35);

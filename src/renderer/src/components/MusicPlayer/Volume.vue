@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useUserInfo } from '@/store'
 
@@ -53,7 +53,7 @@ const volume = computed(() => {
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .volume-box {
   width: 150px;
   display: flex;
@@ -66,7 +66,7 @@ const volume = computed(() => {
     //transform: translateY(-50%);
     //position: absolute;
     //top: 50%;
-    color: @text;
+    color: $text;
     margin-right: 8px;
   }
   .iconfont:hover {

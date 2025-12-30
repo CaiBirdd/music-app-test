@@ -1,4 +1,4 @@
-<!-- 功能: 列表项组件，用于侧边栏播放列表或歌单项，显示图标或封面、名称，并在被点击时通知父组件。 -->
+﻿<!-- 功能: 列表项组件，用于侧边栏播放列表或歌单项，显示图标或封面、名称，并在被点击时通知父组件。 -->
 <script setup lang="ts">
 interface Props {
   item: any
@@ -20,14 +20,14 @@ const emit = defineEmits(['click'])
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .play-list-item {
   cursor: pointer;
-  color: @text;
+  color: $text;
   font-size: 13px;
   text-align: left;
   line-height: 40px;
-  .textOverflow();
+  @include textOverflow();
   padding: 0 10px;
   border-radius: 5px;
   display: flex;
@@ -40,7 +40,7 @@ const emit = defineEmits(['click'])
   }
   .name {
     margin-left: 10px;
-    .textOverflow();
+    @include textOverflow();
   }
 }
 .play-list-item:hover {

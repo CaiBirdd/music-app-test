@@ -51,7 +51,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 #gradual1,
 #gradual2 {
   height: 100%;

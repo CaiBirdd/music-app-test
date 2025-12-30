@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { toggleImg, Yrc } from '@/utils'
 import { Lyric } from '@/store/music'
 import { computed, nextTick, onMounted, useTemplateRef, watch } from 'vue'
@@ -125,7 +125,7 @@ const arNames = computed(() => {
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .shadow {
   backdrop-filter: blur(8px);
   position: absolute;
@@ -151,7 +151,7 @@ const arNames = computed(() => {
       font-weight: 500;
       width: 100%;
       cursor: pointer;
-      .textOverflow(1);
+      @include textOverflow(1);
     }
     .video-cover {
       height: 100%;
@@ -163,7 +163,7 @@ const arNames = computed(() => {
       width: 100%;
       border-radius: 5px;
       transition: 0.8s;
-      .bgSetting();
+      @extend .bgSetting;
     }
     .lyric-container {
       height: 145%;

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { useFlags } from '@/store/flags'
 import useMusic from '@/components/MusicPlayer/useMusic'
 import { computed } from 'vue'
@@ -74,11 +74,11 @@ const gotoComment = () => {
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .left {
   display: flex;
   align-items: center;
-  color: @text;
+  color: $text;
   width: 25%;
 
   .iconfont {
@@ -87,7 +87,7 @@ const gotoComment = () => {
     top: -8px;
   }
   .icon-xihuan {
-    color: @darkText;
+    color: $darkText;
     font-size: 22px;
   }
   .icon-xihuan1 {
@@ -103,7 +103,7 @@ const gotoComment = () => {
     border-radius: 5px;
     overflow: hidden;
     .picture {
-      .bgSetting();
+      @extend .bgSetting;
       width: 100%;
       height: 100%;
       transition: 0.5s;
@@ -151,12 +151,12 @@ const gotoComment = () => {
     .song-name {
       font-size: 15px;
       max-width: 140px;
-      .textOverflow();
+      @include textOverflow();
     }
 
     .name-container {
       max-width: 140px;
-      .textOverflow();
+      @include textOverflow();
     }
   }
 }

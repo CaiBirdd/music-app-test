@@ -57,4 +57,4 @@ const playDetailList = (item: Recommend | typeof recommendSongs) => {
   </div>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="scss" scoped></style>

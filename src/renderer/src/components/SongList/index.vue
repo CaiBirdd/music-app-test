@@ -1,4 +1,4 @@
-<!-- 功能：渲染歌曲列表页（可搜索、播放、分页、右键菜单、显示专辑/歌手信息等）
+﻿<!-- 功能：渲染歌曲列表页（可搜索、播放、分页、右键菜单、显示专辑/歌手信息等）
  是歌曲列表展示与播放交互的主视图组件。 -->
 <script setup lang="ts">
 import { defineComponent, h, nextTick, ref, watch } from 'vue'
@@ -391,7 +391,7 @@ watch(
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .position-target {
 }
 /* 保留原有的样式不变 */
@@ -421,19 +421,18 @@ watch(
   }
   .handle {
     width: 45px;
-    margin-right: 20px;
   }
   .title {
-    width: 40%;
-    color: @text;
-    margin-right: 40% - 38px;
-    .textOverflow();
+    width: 45%;
+    color: $text;
+    flex-shrink: 0;
+    @include textOverflow();
   }
 
   .album {
-    width: 20%;
-    .textOverflow();
-    margin-right: 20% - 19px;
+    width: 35%;
+    flex-shrink: 0;
+    @include textOverflow();
   }
   .time {
     width: 10%;
@@ -442,25 +441,26 @@ watch(
     display: flex;
     font-size: 14px;
     height: 35px;
-    color: @darkText;
+    color: $darkText;
     padding: 0 20px;
-    justify-content: space-around;
+    gap: 10px;
     .title-item {
       text-align: left;
+      flex-shrink: 0;
     }
     .title-item.title {
-      color: @darkText;
+      color: $darkText;
     }
   }
   .list.disable-list {
     //background-color: rgba(0, 0, 0, 0.3);
   }
   .list {
-    justify-content: space-around;
+    gap: 10px;
     font-size: 14px;
     display: flex;
     height: 70px;
-    color: @darkText;
+    color: $darkText;
     align-items: center;
     padding: 0 20px;
     border-radius: 10px;
@@ -477,29 +477,32 @@ watch(
         display: flex;
         flex-direction: column;
         justify-content: space-around;
+        flex: 1;
+        min-width: 0;
         .name-container {
-          color: @text;
+          color: $text;
         }
         .title {
-          color: @text;
+          color: $text;
         }
         > div {
-          .textOverflow();
+          @include textOverflow();
         }
         .name {
           font-size: 13px;
-          color: @darkText;
+          color: $darkText;
         }
       }
     }
     .name {
       cursor: pointer;
       &:hover {
-        color: @text !important;
+        color: $text !important;
       }
     }
     .item {
       text-align: left;
+      flex-shrink: 0;
     }
     .handle {
       font-size: 18px;

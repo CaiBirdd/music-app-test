@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .list-container {
   padding: 20px;
   border-radius: 20px;

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, onMounted, ref, onUnmounted } from 'vue'
 import { useMusicAction } from '@/store/music'
 import LyricDisplay from './LyricDisplay.vue'
@@ -64,7 +64,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .container {
   visibility: hidden;
   position: fixed;
@@ -84,7 +84,7 @@ onUnmounted(() => {
       position: relative;
       transition: 0.5s;
       overflow: hidden;
-      background-color: @bgColor;
+      background-color: $bgColor;
     }
   }
   .close {
@@ -102,7 +102,7 @@ onUnmounted(() => {
     height: 100%;
     width: 100%;
     transition: 1s;
-    .bgSetting();
+    @extend .bgSetting;
   }
 }
 .container.open {

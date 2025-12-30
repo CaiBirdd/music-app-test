@@ -1,4 +1,4 @@
-<!--  文件: index.vue
+﻿<!--  文件: index.vue
 功能概述: 应用左侧侧边栏组件，渲染用户头像、用户歌单与侧边导航菜单，支持折叠子列表、右键上下文菜单、
 创建歌单对话框与路由跳转（选择歌单/菜单项切换页面并携带 query id）。-->
 <script setup lang="ts" name="BaseAside">
@@ -240,7 +240,7 @@ const openDialog = () => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .height-fade-enter-active,
 .height-fade-leave-active {
   overflow: hidden;
@@ -270,7 +270,9 @@ const openDialog = () => {
       width: 40px;
       height: 40px;
       background: url('https://p1.music.126.net/siSjcSLr8ybRZ3VUpC-9hg==/109951165504329717.jpg');
-      .bgSetting();
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
       margin-right: 6px;
       cursor: pointer;
     }
@@ -294,7 +296,7 @@ const openDialog = () => {
     }
     .nickname {
       max-width: 140px;
-      .textOverflow();
+      @include textOverflow();
       font-size: 14px;
     }
   }
@@ -322,7 +324,7 @@ const openDialog = () => {
     .lump {
       .title {
         font-size: 14px;
-        color: @darkText;
+        color: $darkText;
         text-align: left;
         padding: 0 10px;
         margin-bottom: 5px;

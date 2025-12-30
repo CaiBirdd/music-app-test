@@ -1,4 +1,4 @@
-<script setup lang="ts" name="SearchList">
+﻿<script setup lang="ts" name="SearchList">
 import SongList from '@/components/SongList/index.vue'
 import { useMusicAction } from '@/store/music'
 import { columns, tabsConfig } from './config'
@@ -140,7 +140,7 @@ watch(
   <!--  </tabs>-->
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .song-list-container {
   padding-top: 0;
   padding-left: 15px;
@@ -154,7 +154,7 @@ watch(
   .keyword-text {
     font-size: 14px;
     margin-left: 10px;
-    color: @moreDark;
+    color: $moreDark;
   }
 }
 .card {

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { formattingTime } from '@/utils'
 import { GetMusicDetailData } from '@/api/musicList'
 import Volume from '@/components/MusicPlayer/Volume.vue'
@@ -32,7 +32,7 @@ const openDrawer = () => {
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .right {
   width: 27%;
   display: flex;
@@ -40,7 +40,7 @@ const openDrawer = () => {
   justify-content: space-between;
   .current-time,
   .total-time {
-    color: @text;
+    color: $text;
     font-size: 12px;
   }
   .list {

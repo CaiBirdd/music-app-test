@@ -193,7 +193,7 @@ const quitLogin = () => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .padding-container {
   display: grid;
   gap: 10px;

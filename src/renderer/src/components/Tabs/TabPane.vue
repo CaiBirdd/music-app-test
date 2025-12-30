@@ -15,4 +15,4 @@ defineOptions({
   </el-tab-pane>
 </template>
 
-<style lang="less"></style>
+<style lang="scss"></style>

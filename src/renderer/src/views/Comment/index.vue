@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { calculateIsToday, formatDate, toggleImg } from '@/utils'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { getCommentMusic, getMusicDetail, GetMusicDetailData } from '@/api/musicList'
@@ -139,7 +139,7 @@ watch(
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 :deep(.el-tab-pane),
 :deep(.el-tabs__content),
 :deep(.el-tabs) {
@@ -150,7 +150,7 @@ watch(
   width: 100%;
   //position: fixed;
   //transform: translateY(100%);
-  //background-color: @bgColor;
+  //background-color: $bgColor;
   .comment-box {
     padding: 0 0 0 35px;
     display: flex;
@@ -185,7 +185,7 @@ watch(
         width: 130px;
         height: 130px;
         border-radius: 10px;
-        .bgSetting();
+        @extend .bgSetting;
         margin-right: 20px;
       }
     }
@@ -226,7 +226,7 @@ watch(
               border-radius: 50%;
               background-color: #42b983;
               margin-right: 20px;
-              .bgSetting();
+              @extend .bgSetting;
             }
             .right-box {
               display: flex;

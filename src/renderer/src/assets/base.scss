@@ -1,13 +1,13 @@
 // 导入滚动条样式和主题混合宏
-@import './scroll';
-@import './theme/mixin';
+@use './scroll';
+@use './theme/mixin' as *;
 
 // 文本省略号混合宏：默认单行，可传入行数
-.textOverflow (@line: 1) {
+@mixin textOverflow($line: 1) {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: @line;
+  -webkit-line-clamp: $line;
   overflow: hidden;
 }
 
@@ -39,11 +39,11 @@
 }
 
 // 全局颜色变量
-@text: rgb(210, 210, 210); // 主文字颜色
-@darkText: rgb(150, 150, 150); // 次要文字颜色
-@moreDark: rgba(150, 150, 150, 0.6); // 更暗的文字/边框
-@subject: rgb(236, 65, 65); // 主题红色
-@bgColor: rgb(19, 19, 26); // 全局背景色
+$text: rgb(210, 210, 210); // 主文字颜色
+$darkText: rgb(150, 150, 150); // 次要文字颜色
+$moreDark: rgba(150, 150, 150, 0.6); // 更暗的文字/边框
+$subject: rgb(236, 65, 65); // 主题红色
+$bgColor: rgb(19, 19, 26); // 全局背景色
 
 // 隐藏播放器容器的滚动条滑块
 .y-player-container::-webkit-scrollbar-thumb {
@@ -123,9 +123,9 @@ body,
   height: 100%;
   -webkit-font-smoothing: antialiased; // 字体抗锯齿
   -moz-osx-font-smoothing: grayscale;
-  color: @text;
+  color: $text;
   overflow: hidden; // 禁用原生滚动条
-  background-color: @bgColor;
+  background-color: $bgColor;
 }
 
 // 图片禁止选中

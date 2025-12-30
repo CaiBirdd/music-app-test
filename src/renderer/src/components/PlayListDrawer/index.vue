@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import SongList from '@/components/SongList/index.vue'
 import { computed } from 'vue'
 import { columns } from '@/components/PlayListDrawer/config'
@@ -45,7 +45,7 @@ const setModelValue = computed({
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .drawer {
   position: fixed;
   z-index: 2001;
@@ -75,7 +75,7 @@ const setModelValue = computed({
         color: white;
       }
       .count {
-        color: @darkText;
+        color: $darkText;
         font-size: 14px;
         position: relative;
         left: 2px;

@@ -256,7 +256,7 @@ defineExpose(exposeObj)
   </div>
 </template>
 
-<style lang="less">
+<style lang="scss">
 .plan-container {
   display: flex;
   align-items: center;
@@ -268,11 +268,11 @@ defineExpose(exposeObj)
 .el-overlay {
   .music-drawer {
     background-image: url('../../assets/defaultBg.png');
-    .bgSetting();
+    @extend .bgSetting;
   }
 }
 </style>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 :deep(.el-drawer) {
   height: 100%;
 }

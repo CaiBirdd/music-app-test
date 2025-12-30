@@ -1,4 +1,4 @@
-<!-- 一个带左右箭头的横向滚动容器组件 -->
+﻿<!-- 一个带左右箭头的横向滚动容器组件 -->
 <script lang="ts" setup>
 import { ref } from 'vue'
 
@@ -95,7 +95,7 @@ const moveHandler = (direction: 'left' | 'right') => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .area-box {
   margin-top: 20px;
   position: relative;
@@ -123,7 +123,7 @@ const moveHandler = (direction: 'left' | 'right') => {
           background-color: rgba(255, 255, 255, 0.1);
           padding: 3px;
           &:hover {
-            color: @text;
+            color: $text;
           }
         }
         .move.disabled {

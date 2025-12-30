@@ -123,7 +123,7 @@ const tabChange = (name: TabsName) => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .user-detail-container {
 }
 </style>

@@ -1,4 +1,4 @@
-<script setup lang="ts" name="Header">
+﻿<script setup lang="ts" name="Header">
 import Search from '@/components/Search/index.vue'
 import { handle } from '@/layout/BaseHeader/handle'
 import { useFlags } from '@/store/flags'
@@ -72,7 +72,7 @@ const gotoSetting = () => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .window-container {
   height: 90px;
   width: 100%;
@@ -81,7 +81,7 @@ const gotoSetting = () => {
   position: relative; // 子元素 的 z-index 小于父元素时，仍然显示在 父元素 上面: 父元素position:relative;z-index:1,子元素position:开启定位;z-index:10，就可以做到子元素在父元素之上了
   top: 0;
   z-index: auto;
-  //background-color: @bgColor;
+  //background-color: $bgColor;
   //border-bottom: 2px rgb(176,34,34) solid;
   display: flex;
   align-items: center;
@@ -92,7 +92,7 @@ const gotoSetting = () => {
     align-items: center;
     //width: 0px;
     //height: 30px;
-    //.bgSetting();
+    //@extend .bgSetting;
     //cursor: pointer;
     margin-left: 35px;
     .flip {
@@ -112,7 +112,7 @@ const gotoSetting = () => {
       }
       .disable.el-icon {
         cursor: default;
-        color: @moreDark;
+        color: $moreDark;
       }
     }
   }
@@ -132,7 +132,7 @@ const gotoSetting = () => {
         display: flex;
         margin-right: 20px;
         cursor: pointer;
-        color: @text;
+        color: $text;
         &:hover {
           color: rgb(30, 204, 148);
         }

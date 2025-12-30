@@ -24,7 +24,7 @@ export const columns: ComputedRef<Columns[]> = computed(() => {
       title: '标题',
       prop: 'name',
       picUrl: 'al.picUrl',
-      width: '40%',
+      width: '35%',
       class: 'title',
       type: 'title'
     },
@@ -44,7 +44,7 @@ export const columns: ComputedRef<Columns[]> = computed(() => {
     {
       title: '时长',
       prop: 'dt',
-      width: '10%',
+      width: '8%',
       class: 'time',
       processEl(h, data: GetMusicDetailData) {
         return formattingTime(data.dt)
@@ -52,7 +52,7 @@ export const columns: ComputedRef<Columns[]> = computed(() => {
     },
     {
       title: '下载',
-      width: '10%',
+      width: '8%',
       hidden: !store.isLogin,
       processEl(h, { id, name }: GetMusicDetailData) {
         return h('div', [
@@ -92,7 +92,7 @@ export const columns: ComputedRef<Columns[]> = computed(() => {
     },
     {
       title: '热度',
-      width: '10%',
+      width: '12%',
       processEl(h, data: GetMusicDetailData) {
         return h(
           'div',

@@ -234,7 +234,7 @@ const realkeyword = computed(() => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .search-container {
   position: relative;
   padding: 0 15px;

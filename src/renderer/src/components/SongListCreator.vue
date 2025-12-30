@@ -65,4 +65,4 @@ const create = async () => {
   </v-dialog>
 </template>
 
-<style lang="less"></style>
+<style lang="scss"></style>

@@ -18,7 +18,7 @@ const emit = defineEmits(['click'])
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .base-button {
   font-size: 15px;
   display: inline-block;

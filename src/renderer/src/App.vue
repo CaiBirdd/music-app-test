@@ -84,9 +84,7 @@ getUserAccountFn()
   <Login ref="login"></Login>
 </template>
 
-<style lang="less">
-@import '@/assets/base.less';
-
+<style lang="scss">
 .bottom-show {
   visibility: visible;
   opacity: 1;

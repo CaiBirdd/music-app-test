@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface Props {
   isPlay: boolean
   orderStatusVal: number
@@ -27,7 +27,7 @@ const emit = defineEmits(['setOrderHandler', 'cutSong', 'pause', 'play'])
   </div>
 </template>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .center {
   color: rgb(212, 212, 212);
   width: 441px;
@@ -68,7 +68,7 @@ const emit = defineEmits(['setOrderHandler', 'cutSong', 'pause', 'play'])
 
     .operation {
       //margin: 0 40px;
-      color: @text;
+      color: $text;
       font-size: 18px;
       display: inline-block;
       width: 37px;

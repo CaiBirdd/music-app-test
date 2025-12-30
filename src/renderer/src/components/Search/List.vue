@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { RecordContent } from '@/components/Search/type'
 
 interface Props {
@@ -106,7 +106,7 @@ const config = {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .list {
   height: 100%;
   overflow: auto;
@@ -154,7 +154,7 @@ const config = {
           background-color: rgba(255, 255, 255, 0.05);
           font-weight: 400;
           cursor: pointer;
-          .textOverflow();
+          @include textOverflow();
           display: inline-block;
           max-width: 120px;
           &:hover {
@@ -176,7 +176,7 @@ const config = {
 
     .sort {
       margin-right: 20px;
-      color: @darkText;
+      color: $darkText;
     }
     .content {
       display: flex;
@@ -188,7 +188,7 @@ const config = {
           font-weight: 600;
         }
         .score {
-          color: @moreDark;
+          color: $moreDark;
           font-size: 12px;
         }
         .icon {
@@ -201,7 +201,7 @@ const config = {
       }
       .desc {
         font-size: 12px;
-        color: @moreDark;
+        color: $moreDark;
       }
     }
   }
@@ -213,7 +213,7 @@ const config = {
   .suggest-box {
     padding-top: 10px;
     .title {
-      color: @moreDark;
+      color: $moreDark;
       font-size: 16px;
       padding: 0 20px 10px 34px;
     }

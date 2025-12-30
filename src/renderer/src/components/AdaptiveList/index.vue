@@ -14,7 +14,7 @@ const props = defineProps<Props>()
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .play-list {
   padding-top: 15px;
   display: grid;

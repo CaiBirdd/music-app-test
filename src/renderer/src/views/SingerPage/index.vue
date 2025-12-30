@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getArtistDetail, getArtistDetailRes } from '@/api/user'
@@ -126,7 +126,7 @@ const getAlbumContentHandler = async (id: number) => {
   </adaptive-list-box>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .singer-card-container {
   display: flex;
   //align-items: center;
@@ -138,9 +138,9 @@ const getAlbumContentHandler = async (id: number) => {
   margin: 0 auto;
   box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.1);
   transition: 0.4s;
-  .bgSetting();
+  @extend .bgSetting;
   .avatar {
-    .bgSetting();
+    @extend .bgSetting;
     height: 200px;
     width: 200px;
     border-radius: 10px;

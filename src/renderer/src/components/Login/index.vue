@@ -252,13 +252,13 @@ defineExpose({
   </v-dialog>
 </template>
 
-<style lang="less">
+<style lang="scss">
 .el-dialog.login {
   backdrop-filter: blur(60px) saturate(210%);
   background-color: rgba(40, 40, 40, 0.7);
 
   .el-dialog__title {
-    color: @text;
+    color: $text;
   }
   .el-dialog__body {
     display: flex;
@@ -266,7 +266,7 @@ defineExpose({
   }
 }
 </style>
-<style scoped lang="less">
+<style scoped lang="scss">
 .login-container {
   //display: flex;
   //flex-wrap: wrap;

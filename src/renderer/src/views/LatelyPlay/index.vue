@@ -57,7 +57,7 @@ init()
   />
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .record-song {
   padding: 0 35px;
 }

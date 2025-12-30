@@ -87,7 +87,7 @@ onUnmounted(() => {
   </teleport>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .context-menu-wrapper {
   position: relative;
   width: 100%;

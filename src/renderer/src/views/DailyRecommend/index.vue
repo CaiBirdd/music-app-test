@@ -1,4 +1,4 @@
-<!-- 每日推荐歌单 和其他歌单作区分 -->
+﻿<!-- 每日推荐歌单 和其他歌单作区分 -->
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useMusicAction } from '@/store/music'
@@ -56,7 +56,7 @@ init()
   />
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .padding-container {
   display: flex;
   flex-direction: column;
@@ -65,7 +65,7 @@ init()
     display: flex;
     align-items: center;
     .day {
-      border: 3px solid @subject;
+      border: 3px solid $subject;
       width: 80px;
       height: 70px;
       border-radius: 15px;
@@ -82,7 +82,7 @@ init()
         top: -8px;
         height: 13px;
         width: 3px;
-        background-color: @subject;
+        background-color: $subject;
         border-radius: 2px;
       }
       .line {
@@ -91,13 +91,13 @@ init()
         border-radius: 2px;
         height: 3px;
         width: 100%;
-        background-color: @subject;
+        background-color: $subject;
         margin-bottom: 5px;
       }
       .text {
         font-size: 40px;
         font-weight: 800;
-        color: @subject;
+        color: $subject;
         text-align: center;
       }
     }
@@ -110,7 +110,7 @@ init()
       .text-info-desc {
         margin-top: 5px;
         font-size: 12px;
-        color: @darkText;
+        color: $darkText;
       }
     }
   }

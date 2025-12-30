@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Profile } from '@/api/user'
 
 interface Props {
@@ -82,7 +82,7 @@ const props = defineProps<Props>()
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .user-card-container {
   display: flex;
   align-items: center;
@@ -98,14 +98,14 @@ const props = defineProps<Props>()
     display: flex;
     gap: 10px;
   }
-  .bgSetting();
+  @extend .bgSetting;
 
   .avatar {
     height: 200px;
     width: 200px;
     border-radius: 50%;
     background-image: url('https://p1.music.126.net/9GAbSb_hlXPu66HWInJOww==/109951162846052486.jpg');
-    .bgSetting();
+    @extend .bgSetting;
     margin-right: 30px;
   }
   .detail {
@@ -144,7 +144,7 @@ const props = defineProps<Props>()
               display: flex;
               align-items: center;
               font-size: 12px;
-              color: @subject;
+              color: $subject;
               padding-right: 10px;
               img {
                 width: 16px;
@@ -154,7 +154,7 @@ const props = defineProps<Props>()
             .rank {
               margin-left: 5px;
               background-color: rgb(240, 240, 240);
-              color: @bgColor;
+              color: $bgColor;
               font-size: 12px;
               padding: 1px 7px;
               border-radius: 10px;
@@ -183,7 +183,7 @@ const props = defineProps<Props>()
         }
         .text {
           font-size: 13px;
-          color: @darkText;
+          color: $darkText;
         }
         .line {
           width: 1px;
@@ -199,7 +199,7 @@ const props = defineProps<Props>()
         }
         .content {
           font-size: 13px;
-          color: @darkText;
+          color: $darkText;
         }
       }
       .personal-details + .personal-details {

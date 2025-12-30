@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface Props {
   picUrl?: string
   name?: string
@@ -32,7 +32,7 @@ const clickHandler = () => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .card-box {
   display: inline-block;
   //width: calc(15vw - 20px);
@@ -69,7 +69,7 @@ const clickHandler = () => {
       visibility: hidden;
 
       .icon-kaishi1 {
-        color: @subject;
+        color: $subject;
         font-size: 30px;
       }
     }
@@ -86,9 +86,9 @@ const clickHandler = () => {
   }
   .text {
     margin-top: 5px;
-    color: @text;
+    color: $text;
     font-size: 15px;
-    .textOverflow(2);
+    @include textOverflow(2);
   }
 }
 </style>

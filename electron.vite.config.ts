@@ -14,9 +14,9 @@ export default defineConfig({
     plugins: [vue()],
     css: {
       preprocessorOptions: {
-        less: {
-          javascriptEnabled: true,
-          additionalData: `@import "${resolve(__dirname, 'src/renderer/src/assets/base.less')}";`
+        scss: {
+          api: 'modern-compiler',
+          additionalData: `@use "@/assets/base.scss" as *;`
         }
       }
     }

@@ -16,7 +16,7 @@ export const columns: Columns[] = [
     title: '标题',
     prop: 'name',
     picUrl: 'al.picUrl',
-    width: '45%',
+    width: '40%',
     class: 'title',
     type: 'title',
     lazy: true
@@ -24,7 +24,7 @@ export const columns: Columns[] = [
   {
     title: '专辑',
     prop: 'al.name', // 嵌套取值
-    width: '35%',
+    width: '25%',
     class: 'album',
     type: 'album'
   },

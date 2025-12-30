@@ -8,4 +8,4 @@ import { columns } from './config'
   <div>还没写</div>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="scss" scoped></style>
