@@ -99,7 +99,7 @@ const config = {
           class="item"
           @click="emit('click', target, key)"
         >
-          <div class="name">{{ target.text }}</div>
+          <div class="name" v-html="target.text"></div>
         </div>
       </div>
     </template>
