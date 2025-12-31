@@ -69,18 +69,21 @@ interface RecommendSongRes {
     }>
   }
 }
-export const banner = () => request<null, BannerRes>('/banner')
+
+// 获取轮播图
+export const banner = () => request.get<BannerRes>('/banner')
 
 // 获取推荐歌单
-export const personalized = () => request<null, PersonalizedRes>('/personalized', 'get')
+export const personalized = () => request.get<PersonalizedRes>('/personalized')
 
 // 获取每日推荐歌单
-export const recommendSongList = () =>
-  request<null, RecommendSongListRes>('/recommend/resource', 'get')
+export const recommendSongList = () => request.get<RecommendSongListRes>('/recommend/resource')
 
 // 获取每日推荐歌曲
-export const recommendSong = () => request<null, RecommendSongRes>('/recommend/songs', 'get')
+export const recommendSong = () => request.get<RecommendSongRes>('/recommend/songs')
 
-export const homepage = () => request('/homepage/block/page', 'get')
+// 获取首页数据
+export const homepage = () => request.get('/homepage/block/page')
 
-export const privatecontent = () => request('/personalized/privatecontent/list', 'get')
+// 获取独家放送
+export const privatecontent = () => request.get('/personalized/privatecontent/list')

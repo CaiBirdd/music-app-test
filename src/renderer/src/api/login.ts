@@ -16,29 +16,28 @@ interface LoginQrCheckRes {
 
 // 发送验证码
 export const captchaLogin = (phone: string) =>
-  request<{ phone: string }, { code: number; data: boolean }>(`/captcha/sent`, { phone })
+  request.post<{ code: number; data: boolean }>('/captcha/sent', { phone })
 
 // 登录
 export const phoneLogin = (phone: string, captcha: string) =>
-  request<{ phone: string; captcha: string }, PhoneLoginRes>(`/login/cellphone`, { phone, captcha })
+  request.post<PhoneLoginRes>('/login/cellphone', { phone, captcha })
 
 // 二维码key接口生成
 export const loginQrKey = () =>
-  request<null, { code: number; data: { code: number; unikey: string } }>('/login/qr/key', 'get')
+  request.get<{ code: number; data: { code: number; unikey: string } }>('/login/qr/key')
 
 // 二维码生成接口
 export const loginQrCreate = (key: string, qrimg?: boolean) =>
-  request<
-    { key: string; qrimg?: boolean },
-    { code: number; data: { qrimg: string; qrurl: string } }
-  >('/login/qr/create', { key, qrimg }, 'get')
+  request.get<{ code: number; data: { qrimg: string; qrurl: string } }>('/login/qr/create', {
+    params: { key, qrimg }
+  })
 
 // 二维码检测扫码状态接口
 export const loginQrCheck = (key: string) =>
-  request<{ key: string }, LoginQrCheckRes>(`/login/qr/check?key=${key}&noCookie=true`, 'get')
+  request.get<LoginQrCheckRes>(`/login/qr/check?key=${key}&noCookie=true`)
 
 // 获取登录状态
-export const loginStatus = (cookie: string) => request('/login/status', { cookie })
+export const loginStatus = (cookie: string) => request.post('/login/status', { cookie })
 
 // 游客登陆
-export const anonimousLogin = () => request('/register/anonimous')
+export const anonimousLogin = () => request.post('/register/anonimous')

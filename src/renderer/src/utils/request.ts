@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, Method } from 'axios'
+import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { useSettings } from '@/store/settings'
 import { setActivePinia } from 'pinia'
@@ -8,23 +8,21 @@ setActivePinia(pinia)
 
 const settings = useSettings()
 
-const http = axios.create({
+const request = axios.create({
   timeout: 30000,
   baseURL: settings.state.baseUrl
 })
 
 export function setBaseURL(url: string) {
-  http.defaults.baseURL = url
+  request.defaults.baseURL = url
 }
 
 const ignoreState = ['/login/qr/check']
-http.interceptors.request.use(
+request.interceptors.request.use(
   (config) => {
-    // const token = localStorage.getItem('token')
     if (!config.params) {
       config.params = {}
     }
-    // const cookie = getCookie('MUSIC_U')
     const cookie = localStorage.getItem(`MUSIC_U`)
     if (cookie) {
       config.params.cookie = `MUSIC_U=${cookie};`
@@ -34,7 +32,6 @@ http.interceptors.request.use(
    可能会导致登录后获取不到 cookie), 相同的 url 会在两分钟内只向网易服务器发一次请求 ,
    如果遇到不需要缓 存结果的接口 , 可在请求 url 后面加一个时间戳参数使 url 不同 */
     config.params.timestamp = Date.now()
-    // token && (config.headers!.Authorization = token)
     return config
   },
   (error) => {
@@ -42,13 +39,12 @@ http.interceptors.request.use(
   }
 )
 
-http.interceptors.response.use(
+request.interceptors.response.use(
   (response) => {
     const {
       status,
       data: { code }
     } = response
-    // 使用 || '' 替代 ! 非空断言，避免可选链返回 undefined 时出错
     const url = response.config.url?.split('?')[0] || ''
     if (!ignoreState.includes(url) && status !== 200 && code !== 200) {
       ElMessage.error(response.data.message || `请求出现错误，当前状态码为${code || status}`)
@@ -63,45 +59,5 @@ http.interceptors.response.use(
     return Promise.reject(data)
   }
 )
-
-type Request = {
-  <D = any>(config: AxiosRequestConfig): Promise<D>
-  <R = unknown, D = any>(
-    url: string,
-    method?: Method,
-    config?: AxiosRequestConfig | { data: R; params: R }
-  ): Promise<D>
-  <R = unknown, D = any>(url: string, data: R, method?: Method): Promise<D>
-  <R = unknown, D = any>(url: string, data: R, config?: AxiosRequestConfig): Promise<D>
-}
-type Url = AxiosRequestConfig | string
-type Config<R> =
-  | (AxiosRequestConfig & { data: R; params: R })
-  | undefined
-  | Method
-  | AxiosRequestConfig
-// D 仅用于类型提示，实际不参与运算，无需声明
-const request: Request = <R>(url: Url, method?: unknown | Method, config?: Config<R>) => {
-  if (typeof url !== 'string') {
-    return http(url)
-  } else if (method === undefined) {
-    return request(url, 'post')
-  } else if (typeof method === 'string') {
-    return http({
-      ...(<AxiosRequestConfig>config),
-      url,
-      method
-    })
-  } else if (typeof method === 'object' && config === undefined) {
-    return http.post(url, method)
-  } else if (typeof config === 'string') {
-    return http({
-      url,
-      [config.toLowerCase() !== 'get' ? 'data' : 'params']: method,
-      method: config
-    })
-  }
-  return http(url)
-}
 
 export default request

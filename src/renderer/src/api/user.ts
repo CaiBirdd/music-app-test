@@ -90,14 +90,14 @@ interface getUserDetailRes {
 }
 // 获取用户详情  通过指定的uid获取指定用户详情信息
 export const getUserDetail = (uid: number) =>
-  request<{ uid: number }, getUserDetailRes>(`/user/detail?uid=${uid}`, 'get')
+  request.get<getUserDetailRes>('/user/detail', { params: { uid } })
 
 // 获取账号信息
-export const getUserAccount = () => request<null, getUserAccountRes>('/user/account', 'get')
+export const getUserAccount = () => request.get<getUserAccountRes>('/user/account')
 
 // 获取歌手详情
 export const getArtistDetail = (id: number) =>
-  request<{ id: number }, getArtistDetailRes>(`/artist/detail?id=${id}`, 'get')
+  request.get<getArtistDetailRes>('/artist/detail', { params: { id } })
 
 // 获取用户绑定信息
-export const getUserBinding = (uid: number) => request(`/user/binding?uid=${uid}`)
+export const getUserBinding = (uid: number) => request.post('/user/binding', { uid })

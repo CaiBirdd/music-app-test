@@ -170,60 +170,54 @@ interface GetIntelliganceListRes {
 
 // 获取喜欢音乐列表ids
 export const getLikeMusicListIds = (uid: number) =>
-  request<{ uid: number }, { checkPoint: number; code: number; ids: number[] }>(
-    `/likelist?uid=${uid}`,
-    'get'
-  )
+  request.get<{ checkPoint: number; code: number; ids: number[] }>('/likelist', {
+    params: { uid }
+  })
 
 // 获取用户歌单信息
 export const getUserPlayList = (uid: number) =>
-  request<{ uid: string }, GetUserPlayListRes>(`/user/playlist?uid=${uid}`, 'get')
+  request.get<GetUserPlayListRes>('/user/playlist', { params: { uid } })
 
 // 获取歌单所有歌曲   最多只能获取十首
 export const getUserPlayListMusic = (id: number) =>
-  request(`/playlist/track/all?id=${id}&limit=10&offset=0`, 'get')
+  request.get('/playlist/track/all', { params: { id, limit: 10, offset: 0 } })
 
 // 获取音乐url
 export const getMusicUrl = (id: number) =>
-  request<string, GetMusicUrlRes>(`/song/url/v1?id=${id}&level=lossless`, 'get')
+  request.get<GetMusicUrlRes>('/song/url/v1', { params: { id, level: 'lossless' } })
 
 // 获取歌单详情  可以获取歌单全部歌曲
 export const getPlayListDetail = (id: number) =>
-  request<{ id: number }, GetPlayListDetailRes>(`/playlist/detail?id=${id}`, 'get')
+  request.get<GetPlayListDetailRes>('/playlist/detail', { params: { id } })
 
 // 获取歌曲详情
 export const getMusicDetail = (ids: string) =>
-  request<string, GetMusicDetailRes>(`/song/detail?ids=${ids}`, 'get')
+  request.get<GetMusicDetailRes>('/song/detail', { params: { ids } })
 
 // 对歌单添加或删除歌曲
 export const addOrDelPlaylist = (op: 'add' | 'del', pid: number, tracks: number) =>
-  request('/playlist/tracks', { op, pid, tracks })
+  request.post('/playlist/tracks', { op, pid, tracks })
 
 // 喜欢音乐
 export const likeMusicApi = (id: number, like: boolean = true) =>
-  request<
-    { id: number; like: boolean },
-    { code: number; playlistId: number; songs: GetMusicDetailData[] }
-  >('/like', { id, like }, 'get')
+  request.get<{ code: number; playlistId: number; songs: GetMusicDetailData[] }>('/like', {
+    params: { id, like }
+  })
 
 // 获取歌词
 export const getLyric = (id: number | string) =>
-  request<{ id: number }, GetLyricRes>(`/lyric/new?id=${id}`, 'get')
+  request.get<GetLyricRes>('/lyric/new', { params: { id } })
 
 // 获取云盘歌曲
 export const getUserCloud = (limit?: number, offset?: number) =>
-  request<{ limit: number; offset: number }, GetUserCloudRes>('/user/cloud', 'get', {
-    params: { limit, offset }
-  })
+  request.get<GetUserCloudRes>('/user/cloud', { params: { limit, offset } })
 
 // 获取歌手专辑
 export const getArtistAlbum = (id: number, limit?: number) =>
-  request<{ id: number; limit: number }, GetArtistAlbumRes>('/artist/album', 'get', {
-    params: { id, limit }
-  })
+  request.get<GetArtistAlbumRes>('/artist/album', { params: { id, limit } })
 
 // 获取专辑内容
-export const getAlbumContent = (id: number) => request(`/album?id=${id}`, 'get')
+export const getAlbumContent = (id: number) => request.get('/album', { params: { id } })
 
 // 获取歌曲评论
 // 0: 歌曲 1: mv 2: 歌单 3: 专辑 4: 电台节目 5: 视频 6: 动态 7: 电台
@@ -234,30 +228,27 @@ export const getCommentMusic = (
   pageSize?: number,
   sortType?: 1 | 2 | 3,
   cursor?: number
-) => request('/comment/new', 'get', { params: { id, type, pageNo, pageSize, sortType, cursor } })
+) => request.get('/comment/new', { params: { id, type, pageNo, pageSize, sortType, cursor } })
 
-export const getRecordSong = (limit = 200) =>
-  request('/record/recent/song', {
-    limit: limit
-  })
+export const getRecordSong = (limit = 200) => request.post('/record/recent/song', { limit })
 
 // 心动模式/智能播放
 export const getIntelliganceList = (pid: number, id: number, sid: number) =>
-  request<{ pid: number; id: number; sid: number }, GetIntelliganceListRes>(
-    `/playmode/intelligence/list?pid=${pid}&id=${id}&sid=${sid}`,
-    'get'
-  )
+  request.get<GetIntelliganceListRes>('/playmode/intelligence/list', {
+    params: { pid, id, sid }
+  })
 
 // 歌曲动态封面
-export const getDynamicCover = (id: number) => request(`/song/dynamic/cover?id=${id}`, 'get')
+export const getDynamicCover = (id: number) =>
+  request.get('/song/dynamic/cover', { params: { id } })
 
 export const updateScrobble = (id: number, sourceid?: number) =>
-  request(`/scrobble?id=${id}&sourceid=${sourceid}`)
+  request.post('/scrobble', { id, sourceid })
 
 // 获取用户播放记录
 export const getUserRecord = (uid: number, type: number = 1) =>
-  request(`/user/record?uid=${uid}&type=${type}`)
+  request.post('/user/record', { uid, type })
 
 // 云盘歌曲信息匹配纠正
 export const updateCloudMatch = (uid: number, sid: string, asid: string) =>
-  request(`/cloud/match?uid=${uid}&sid=${sid}&asid=${asid}`, 'get')
+  request.get('/cloud/match', { params: { uid, sid, asid } })
