@@ -11,7 +11,7 @@ import {
   updateScrobble
 } from '@/api/musicList'
 import { watch, reactive } from 'vue'
-import { parseLRC } from '@/utils/lyric'
+import { parseLRC, mergeLyricsWithTranslation } from '@/utils/lyric'
 import { randomNum } from '@/utils'
 
 export type Lyric = { time: number | boolean; text: string; line: number }
@@ -85,9 +85,10 @@ export const useMusicAction = defineStore('musicActionId', () => {
   }
   // 获取歌词
   const getLyricHandler = async (id: number) => {
-    const { lrc } = await getLyric(id)
+    const { lrc, tlyric } = await getLyric(id)
     const result = parseLRC(lrc.lyric)
-    state.lyric = result.lines
+    // 合并翻译歌词
+    state.lyric = mergeLyricsWithTranslation(result, tlyric?.lyric)
     state.noTimestamp = result.noTimestamp
     if (state.lyric.length === 1) {
       state.lyric = []

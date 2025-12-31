@@ -136,7 +136,7 @@ const arNames = computed(() => {
   .lyric-and-bg-container {
     display: flex;
     margin-top: 17vh;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     height: 58vh;
     transition: 1s;

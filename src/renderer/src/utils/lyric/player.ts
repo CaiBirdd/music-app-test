@@ -104,7 +104,21 @@ export class LyricPlayer {
       const div = document.createElement('div')
       div.className = 'lyric-line'
       div.dataset.index = String(line.index)
-      div.textContent = line.text || '...'
+
+      // 原歌词文本
+      const textEl = document.createElement('div')
+      textEl.className = 'lyric-text'
+      textEl.textContent = line.text || '...'
+      div.appendChild(textEl)
+
+      // 翻译文本（如果有）
+      if (line.translation) {
+        const transEl = document.createElement('div')
+        transEl.className = 'lyric-translation'
+        transEl.textContent = line.translation
+        div.appendChild(transEl)
+      }
+
       if (this.noTimestamp) {
         div.classList.add('no-timestamp')
       }
@@ -198,7 +212,7 @@ export class LyricPlayer {
     } else {
       gsap.to(this.container, {
         scrollTop: targetScroll,
-        duration: 0.4,
+        duration: 0.6,
         ease: 'power2.out'
       })
     }

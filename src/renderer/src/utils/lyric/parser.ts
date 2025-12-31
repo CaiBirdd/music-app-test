@@ -7,6 +7,7 @@ export interface LyricLine {
   time: number // 开始时间（秒）
   duration: number // 持续时间（秒）
   text: string // 歌词文本
+  translation?: string // 翻译文本
   index: number // 行索引
 }
 
@@ -104,4 +105,54 @@ export function parseLRC(lrcStr: string): ParseResult {
   }
 
   return { lines: result, noTimestamp: false }
+}
+
+/**
+ * 合并原歌词和翻译歌词
+ * 根据时间戳匹配，将翻译文本附加到原歌词行
+ * @param original 原歌词解析结果
+ * @param translationLrc 翻译歌词字符串
+ * @returns 合并后的歌词行数组
+ */
+export function mergeLyricsWithTranslation(
+  original: ParseResult,
+  translationLrc: string | undefined | null
+): LyricLine[] {
+  if (!translationLrc || !translationLrc.trim() || original.noTimestamp) {
+    return original.lines
+  }
+
+  // 解析翻译歌词
+  const translationResult = parseLRC(translationLrc)
+  if (translationResult.noTimestamp || translationResult.lines.length === 0) {
+    return original.lines
+  }
+
+  // 创建翻译歌词的时间索引 Map（使用时间戳作为 key）
+  const translationMap = new Map<number, string>()
+  for (const line of translationResult.lines) {
+    if (line.text.trim()) {
+      translationMap.set(line.time, line.text)
+    }
+  }
+
+  // 合并歌词：为原歌词匹配翻译
+  const tolerance = 0.5 // 时间容差（秒）
+  for (const line of original.lines) {
+    // 先尝试精确匹配
+    if (translationMap.has(line.time)) {
+      line.translation = translationMap.get(line.time)
+      continue
+    }
+
+    // 容差匹配：查找时间戳相近的翻译
+    for (const [time, text] of translationMap) {
+      if (Math.abs(time - line.time) <= tolerance) {
+        line.translation = text
+        break
+      }
+    }
+  }
+
+  return original.lines
 }

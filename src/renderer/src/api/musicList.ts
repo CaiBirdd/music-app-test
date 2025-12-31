@@ -105,6 +105,11 @@ interface GetLyricRes {
     lyric: string // 可能会返回空串
     version: number
   }
+  tlyric: {
+    // 翻译歌词
+    lyric: string // 可能会返回空串
+    version: number
+  } | null
   yrc: {
     // 网易云逐字歌词
     lyric: string
