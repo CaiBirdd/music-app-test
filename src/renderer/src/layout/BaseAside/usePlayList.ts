@@ -1,5 +1,5 @@
 //封装获取与维护当前歌单（或日推）数据的逻辑：调用音乐相关 API 拉取歌单/专辑歌曲详情、整理为播放列表状态，并同步到全局 store（用户/播放相关 store）
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import {
   CurrentItem,
   getAlbumContent,
@@ -21,7 +21,7 @@ interface State {
   loading: boolean
 }
 
-export const playListState: State = reactive({
+export const playListState = ref<State>({
   playList: [],
   listInfo: {} as PlayList,
   ids: [],
@@ -38,7 +38,7 @@ export default () => {
     type?: 'album' | string,
     isUpdateLoading: boolean = true
   ) => {
-    isUpdateLoading && (playListState.loading = true)
+    isUpdateLoading && (playListState.value.loading = true)
 
     try {
       // 防止获取的是日推歌曲，因为日推歌曲没有歌单id
@@ -63,7 +63,7 @@ export default () => {
         await getRecommendSongs()
       }
     } finally {
-      isUpdateLoading && (playListState.loading = false)
+      isUpdateLoading && (playListState.value.loading = false)
     }
   }
   // 获取日推歌曲
@@ -74,11 +74,11 @@ export default () => {
     return data
   }
   const updatePlayList = async (list: CurrentItem) => {
-    playListState.playList = list.tracks
-    playListState.ids = list.tracks.map((item) => item.id)
+    playListState.value.playList = list.tracks
+    playListState.value.ids = list.tracks.map((item) => item.id)
     // 过滤掉track属性
     const { tracks, ...args } = list
-    playListState.listInfo = args as any
+    playListState.value.listInfo = args as any
     music.updateCurrentItem(list)
     getLikeMusicIds()
   }

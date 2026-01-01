@@ -1111,19 +1111,21 @@ emit('update:modelValue', 100)
 
 ---
 
-#### 2.3 ref 和 reactive 泛型
+#### 2.3 ref 泛型（推荐统一使用 ref）
+
+> **📢 重要更新**：项目已统一使用 `ref` 替代 `reactive`，详见 [REACTIVE_TO_REF_MIGRATION.md](./REACTIVE_TO_REF_MIGRATION.md)
 
 **项目实例**：`store/music.ts`、`components/MusicPlayer/index.vue`
 
 ```typescript
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 
 // ref 泛型：简单类型
 const isPlay = ref<boolean>(false)
 const audio = ref<HTMLAudioElement>() // 可能为 undefined
 const keywords = ref<string>('')
 
-// reactive 泛型：复杂对象
+// ref 泛型：复杂对象（推荐方式）
 interface State {
   musicUrl: string
   songs: GetMusicDetailData
@@ -1131,13 +1133,23 @@ interface State {
   orderStatusVal: 0 | 1 | 2 | 3
 }
 
-const state: State = reactive({
+const state = ref<State>({
   musicUrl: '',
   songs: {},
   lyric: [],
   orderStatusVal: 1
 })
+
+// 使用时需要 .value
+state.value.musicUrl = 'xxx'
+state.value.orderStatusVal = 2
 ```
+
+**注意事项**：
+
+- 在 **script** 中访问 ref 需要 `.value`
+- 在 **模板** 中 Vue 会自动解包，不需要 `.value`
+- **Pinia store** 返回的 ref 在外部使用时不需要 `.value`（Pinia 自动解包）
 
 ---
 

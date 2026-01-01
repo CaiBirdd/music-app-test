@@ -1,6 +1,6 @@
 <!-- 在首页显示“歌单/推荐”区域。 -->
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { Recommend, recommendSongList } from '@/api/home'
 import { useRouter } from 'vue-router'
 import recommendImage from '@/assets/recommend.png'
@@ -13,16 +13,16 @@ interface State {
   recommend: Recommend[]
   loading: boolean
 }
-const state: State = reactive({
+const state = ref<State>({
   recommend: [],
   loading: false
 })
 const router = useRouter()
 async function init() {
-  state.loading = true
+  state.value.loading = true
   const { recommend } = await recommendSongList()
-  state.loading = false
-  state.recommend = recommend
+  state.value.loading = false
+  state.value.recommend = recommend
 }
 init()
 

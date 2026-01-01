@@ -4,7 +4,7 @@ import { useMusicAction } from '@/store/music'
 import { columns, tabsConfig } from './config'
 import { useRoute, useRouter } from 'vue-router'
 import { cloudSearch } from '@/api/search'
-import { reactive, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { GetMusicDetailData } from '@/api/musicList'
 import AreaBox from '@/components/AreaBox/index.vue'
 import Card from '@/components/Card/index.vue'
@@ -25,7 +25,7 @@ const router = useRouter()
 const limit = ref(50)
 const page = ref(1)
 const loading = ref(false)
-const state: State = reactive({
+const state = ref<State>({
   songs: {
     result: [],
     songCount: 0
@@ -47,8 +47,8 @@ const search = async (key: string, offset: number, limit: number) => {
   const { result } = await cloudSearch(key, offset, limit).finally(() => {
     loading.value = false
   })
-  state.songs.songCount = result.songCount
-  state.songs.result = result.songs
+  state.value.songs.songCount = result.songCount
+  state.value.songs.result = result.songs
   music.updateSearchList(result.songs)
 }
 
@@ -59,8 +59,8 @@ const currentChange = (val: number) => {
 
 const getKeySongList = async (key: string, offset: number, limit: number) => {
   const { result } = await cloudSearch(key, offset, limit, 1000)
-  state.songList.playlistCount = result.playlistCount
-  state.songList.playlists = result.playlists
+  state.value.songList.playlistCount = (result as any).playlistCount
+  state.value.songList.playlists = (result as any).playlists
   // console.log('result', result)
 }
 

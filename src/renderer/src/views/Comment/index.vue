@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { calculateIsToday, formatDate, toggleImg } from '@/utils'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { getCommentMusic, getMusicDetail, GetMusicDetailData } from '@/api/musicList'
 import { useRoute, useRouter } from 'vue-router'
 import { useFlags } from '@/store/flags'
@@ -17,7 +17,7 @@ const flags = useFlags()
 const router = useRouter()
 const route = useRoute()
 const page = ref(1)
-const state: State = reactive({
+const state = ref<State>({
   comments: [],
   song: null,
   total: 0,
@@ -39,18 +39,18 @@ onMounted(() => {
 const getCommentMusicFn = async (id: number, page: number) => {
   const { data, code } = await getCommentMusic(id, 0, page, 20, 2)
   if (code === 200) {
-    state.comments = data.comments
-    state.total = data.totalCount
+    state.value.comments = data.comments
+    state.value.total = data.totalCount
   }
 }
 const currentChange = (page: number) => {
-  state.currentPage = page
+  state.value.currentPage = page
   getCommentMusicFn(id, page)
 }
 const getMusicDetailFn = async (id: number) => {
   const { songs } = await getMusicDetail(String(id))
-  state.song = songs[0]
-  bg.value = state.song.al.picUrl
+  state.value.song = songs[0]
+  bg.value = state.value.song.al.picUrl
 }
 function init() {
   getCommentMusicFn(id, page.value)

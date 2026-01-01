@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import UserDetailCard from '@/components/UserDetailCard/index.vue'
 import { getUserDetail, Profile } from '@/api/user'
-import { onUnmounted, reactive, ref, watch } from 'vue'
+import { onUnmounted, ref, watch } from 'vue'
 import { province } from 'province-city-china/data'
 import UserDetailList from '@/components/UserDetailList/index.vue'
 import { list } from '@/views/UserDetail/config'
@@ -22,7 +22,7 @@ interface State {
 const router = useRouter()
 const route = useRoute()
 const store = useUserInfo()
-const state: State = reactive({
+const state = ref<State>({
   userInfo: {} as Profile,
   identify: {} as {
     level: number
@@ -71,13 +71,13 @@ onUnmounted(() => {
 // 获取用户详情
 async function getUserDetailHandler(uid: number) {
   const { profile, level } = await getUserDetail(uid)
-  state.userInfo = profile
-  theme.change(state.userInfo.avatarUrl)
-  state.identify = {
+  state.value.userInfo = profile
+  theme.change(state.value.userInfo.avatarUrl)
+  state.value.identify = {
     level
   }
   location.value =
-    (province.find((item) => +item.code === state.userInfo.province) || {}).name || '未知'
+    (province.find((item) => +item.code === state.value.userInfo.province) || {}).name || '未知'
 }
 
 // 获取指定用户歌单
@@ -88,12 +88,12 @@ async function getUserSongListHandler(uid: number) {
     loading.value = false
     isFirstEnter = false
   }
-  state.allPlayList = playlist
-  state.playList = getCurrentTabsList(activeName.value)
+  state.value.allPlayList = playlist
+  state.value.playList = getCurrentTabsList(activeName.value)
 }
 type TabsName = 'createSongList' | 'collectSongList' | 'createSpecial'
 const getCurrentTabsList = (name: TabsName) => {
-  return state.allPlayList.filter((item) => {
+  return state.value.allPlayList.filter((item) => {
     if (name === 'createSongList') {
       return userId.value === store.profile.userId ? !item.subscribed : !item.ordered
     } else if (name === 'collectSongList') {
@@ -105,7 +105,7 @@ const getCurrentTabsList = (name: TabsName) => {
 
 const tabChange = (name: TabsName) => {
   activeName.value = name
-  state.playList = getCurrentTabsList(name)
+  state.value.playList = getCurrentTabsList(name)
 }
 </script>
 

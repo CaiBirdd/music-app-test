@@ -9,7 +9,7 @@ import {
 } from '@/api/musicList'
 import { columns } from './config'
 import SongList from '@/components/SongList/index.vue'
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 
 const music = useMusicAction()
 // GetUserCloudRes['data']
@@ -22,7 +22,7 @@ interface State {
   page: number
   limit: number
 }
-const state: State = reactive({
+const state = ref<State>({
   loading: true,
   ids: [],
   list: [],
@@ -35,22 +35,23 @@ const state: State = reactive({
 getUserCloudFn()
 
 async function getUserCloudFn() {
-  state.loading = true
-  const { data, count } = await getUserCloud(state.limit, (state.page - 1) * state.limit).finally(
-    () => {
-      state.loading = false
-    }
-  )
-  state.total = count
-  state.list = data.map((item) => {
-    state.ids.push(item.simpleSong.id)
+  state.value.loading = true
+  const { data, count } = await getUserCloud(
+    state.value.limit,
+    (state.value.page - 1) * state.value.limit
+  ).finally(() => {
+    state.value.loading = false
+  })
+  state.value.total = count
+  state.value.list = data.map((item) => {
+    state.value.ids.push(item.simpleSong.id)
     return item.simpleSong
   })
-  music.updateCurrentItem({ id: 'cloud-songs', tracks: state.list })
+  music.updateCurrentItem({ id: 'cloud-songs', tracks: state.value.list })
 }
 
 const currentChange = (val: number) => {
-  state.page = val
+  state.value.page = val
   getUserCloudFn()
 }
 </script>

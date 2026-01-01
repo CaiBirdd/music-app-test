@@ -10,7 +10,7 @@ import {
   GetPlayListDetailRes,
   updateScrobble
 } from '@/api/musicList'
-import { watch, reactive } from 'vue'
+import { watch, ref } from 'vue'
 import { parseLRC, mergeLyricsWithTranslation } from '@/utils/lyric'
 import { randomNum } from '@/utils'
 
@@ -37,7 +37,7 @@ interface State {
 
 // 会把用户当前正在播放的列表单独存储起来，以便切换歌单时没有播放切换的歌单不会被清空
 export const useMusicAction = defineStore('musicActionId', () => {
-  const state: State = reactive({
+  const state = ref<State>({
     musicUrl: '', // 用户当前播放器播放的音乐url
     songs: {}, // 用户当前播放器播放的音乐
     currentItem: null, // 用户当前选中的歌单列表，会随着用户选中的菜单变化
@@ -55,32 +55,32 @@ export const useMusicAction = defineStore('musicActionId', () => {
     searchList: []
   })
   watch(
-    () => state.index,
+    () => state.value.index,
     (value, oldValue) => {
-      state.lastIndexList.push(oldValue)
+      state.value.lastIndexList.push(oldValue)
     }
   )
   const updateSearchList = (val: any) => {
-    state.searchList = val
+    state.value.searchList = val
   }
   const updateCurrentItem = (val: Partial<CurrentItem>) => {
     val.name = val.specialType === 5 ? '我喜欢的歌单' : val.name
     // 类型不匹配，使用as any断言以不影响功能
-    state.currentItem = val as any
+    state.value.currentItem = val as any
   }
   const updateRuntimeList = (list: CurrentItem, ids: number[]) => {
-    if (list.specialType !== 5 && state.orderStatusVal === 0) {
-      state.orderStatusVal = 1
+    if (list.specialType !== 5 && state.value.orderStatusVal === 0) {
+      state.value.orderStatusVal = 1
     }
-    state.runtimeList = list
-    state.runtimeIds = ids
+    state.value.runtimeList = list
+    state.value.runtimeIds = ids
 
     getIntelliganceListHandler()
   }
   const updateTracks = (tracks: GetMusicDetailData[], ids: number[]) => {
-    if (state.runtimeList) {
-      state.runtimeList.tracks = tracks
-      state.runtimeIds = ids
+    if (state.value.runtimeList) {
+      state.value.runtimeList.tracks = tracks
+      state.value.runtimeIds = ids
     }
   }
   // 获取歌词
@@ -88,48 +88,48 @@ export const useMusicAction = defineStore('musicActionId', () => {
     const { lrc, tlyric } = await getLyric(id)
     const result = parseLRC(lrc.lyric)
     // 合并翻译歌词
-    state.lyric = mergeLyricsWithTranslation(result, tlyric?.lyric)
-    state.noTimestamp = result.noTimestamp
-    if (state.lyric.length === 1) {
-      state.lyric = []
+    state.value.lyric = mergeLyricsWithTranslation(result, tlyric?.lyric)
+    state.value.noTimestamp = result.noTimestamp
+    if (state.value.lyric.length === 1) {
+      state.value.lyric = []
     }
   }
   const updateState = (data) => {
-    Object.assign(state, data)
+    Object.assign(state.value, data)
   }
   // 获取动态封面
   const getDynamicCoverHandler = async (id: number) => {
     try {
       const { data } = await getDynamicCover(id)
       if (data.videoPlayUrl) {
-        state.videoPlayUrl = data.videoPlayUrl
+        state.value.videoPlayUrl = data.videoPlayUrl
       } else {
-        state.videoPlayUrl = null
+        state.value.videoPlayUrl = null
       }
     } catch {
-      state.videoPlayUrl = null
+      state.value.videoPlayUrl = null
     }
   }
   // 获取音乐url并播放
   const getMusicUrlHandler = async (item: GetMusicDetailData, i?: number) => {
     try {
-      state.songs = item
+      state.value.songs = item
       getLyricHandler(item.id)
       getDynamicCoverHandler(item.id)
       // id可能是string | number，添加as number断言
-      updateScrobble(item.id, state.runtimeList?.id as number | undefined)
+      updateScrobble(item.id, state.value.runtimeList?.id as number | undefined)
       const [{ data }] = await Promise.all([
         getMusicUrl(item.id),
         getMusicDetail(item.id.toString())
       ])
-      state.index = i === undefined ? state.index : i
+      state.value.index = i === undefined ? state.value.index : i
       if (window.$audio) {
         window.$audio.reset(true)
         await window.$audio.pause(false)
-        state.musicUrl = data[0].url || ''
+        state.value.musicUrl = data[0].url || ''
         window.$audio.cutSongHandler()
         // 监听audio是否加载完毕
-        localStorage.setItem('MUSIC_CONFIG', JSON.stringify({ ...state, load: true }))
+        localStorage.setItem('MUSIC_CONFIG', JSON.stringify({ ...state.value, load: true }))
 
         window.$audio.el.oncanplay = async () => {
           try {
@@ -163,39 +163,40 @@ export const useMusicAction = defineStore('musicActionId', () => {
   // 0心动 1列表循环 2随机播放 3单曲循环
   const orderTarget = (i: 0 | 1 | 2 | 3) => {
     if (i === 0) {
-      return (state.index + 1) % state.runtimeIds.length
+      return (state.value.index + 1) % state.value.runtimeIds.length
     } else if (i === 1) {
-      return (state.index + 1) % state.runtimeIds.length
+      return (state.value.index + 1) % state.value.runtimeIds.length
     } else if (i === 2) {
-      return randomNum(0, state.runtimeIds.length - 1)
+      return randomNum(0, state.value.runtimeIds.length - 1)
     } else {
-      return state.index
+      return state.value.index
     }
   }
   const playEnd = () => {
-    state.index = orderTarget((state?.orderStatusVal ?? 0) as 0 | 1 | 2 | 3)
-    if (state.index > state.runtimeIds.length - 1) {
+    state.value.index = orderTarget((state.value?.orderStatusVal ?? 0) as 0 | 1 | 2 | 3)
+    if (state.value.index > state.value.runtimeIds.length - 1) {
       return
     }
-    getMusicUrlHandler(state.runtimeList!.tracks[state.index])
+    getMusicUrlHandler(state.value.runtimeList!.tracks[state.value.index])
   }
   // 切换歌曲
   const cutSongHandler = (target: boolean) => {
-    if ([0, 1, 3].includes(state?.orderStatusVal ?? 0)) {
-      state.index = target ? state.index + 1 : state.index - 1
-      if (state.index > state.runtimeIds.length - 1) {
-        state.index = 0
-      } else if (state.index < 0) {
-        state.index = state.runtimeIds.length - 1
+    if ([0, 1, 3].includes(state.value?.orderStatusVal ?? 0)) {
+      state.value.index = target ? state.value.index + 1 : state.value.index - 1
+      if (state.value.index > state.value.runtimeIds.length - 1) {
+        state.value.index = 0
+      } else if (state.value.index < 0) {
+        state.value.index = state.value.runtimeIds.length - 1
       }
-      getMusicUrlHandler(state.runtimeList!.tracks[state.index])
+      getMusicUrlHandler(state.value.runtimeList!.tracks[state.value.index])
       return
     }
     if (!target) {
       const i =
-        state.lastIndexList[state.lastIndexList.length - 1] || orderTarget(state?.orderStatusVal)
-      getMusicUrlHandler(state.runtimeList!.tracks[i])
-      state.lastIndexList.splice(state.lastIndexList.length - 1)
+        state.value.lastIndexList[state.value.lastIndexList.length - 1] ||
+        orderTarget(state.value?.orderStatusVal)
+      getMusicUrlHandler(state.value.runtimeList!.tracks[i])
+      state.value.lastIndexList.splice(state.value.lastIndexList.length - 1)
       return
     }
     playEnd()
@@ -205,17 +206,17 @@ export const useMusicAction = defineStore('musicActionId', () => {
   // }
   const updateBgColor = (colors: Array<Array<number>>) => {
     // 将 [89, 134, 167] 转换为 "89, 134, 167" 供 CSS v-bind 使用
-    state.bgColor = colors.map((color) => color.join(', '))
+    state.value.bgColor = colors.map((color) => color.join(', '))
   }
   // 获取心动歌曲列表  只支持我喜欢的列表 pid: 歌单id   id: 歌曲id
   const getIntelliganceListHandler = async () => {
-    const runtimeList = state.runtimeList
+    const runtimeList = state.value.runtimeList
 
-    if (state.orderStatusVal !== 0 || !runtimeList || runtimeList.specialType !== 5) {
+    if (state.value.orderStatusVal !== 0 || !runtimeList || runtimeList.specialType !== 5) {
       return
     }
 
-    const songs = state.songs
+    const songs = state.value.songs
     // id可能是string | number，添加as number断言
     const { data } = await getIntelliganceList(
       runtimeList.id as number,

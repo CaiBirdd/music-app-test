@@ -1,5 +1,5 @@
 import { cloudSearch } from '@/api/search'
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { GetMusicDetailData } from '@/api/musicList'
 
 interface State {
@@ -8,14 +8,14 @@ interface State {
 }
 
 export default () => {
-  const state: State = reactive({
+  const state = ref<State>({
     resultList: [],
     songCount: 0
   })
   const search = async (key: string, offset: number, limit = 30) => {
     const { result } = await cloudSearch(key, offset, limit)
-    state.songCount = result.songCount
-    state.resultList = result.songs
+    state.value.songCount = result.songCount
+    state.value.resultList = result.songs
   }
 
   return {

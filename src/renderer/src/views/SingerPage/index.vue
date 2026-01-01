@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getArtistDetail, getArtistDetailRes } from '@/api/user'
 import { getArtistAlbum, GetArtistAlbumRes } from '@/api/musicList'
@@ -13,7 +13,7 @@ interface State {
   artist: getArtistDetailRes['data']['artist']
   albums: GetArtistAlbumRes['hotAlbums']
 }
-const state: State = reactive({
+const state = ref<State>({
   singerDetail: {} as getArtistDetailRes['data'],
   artist: {} as getArtistDetailRes['data']['artist'],
   albums: []
@@ -47,23 +47,23 @@ function init() {
 async function getSingerDetail(id: number) {
   const { data } = await getArtistDetail(id)
 
-  state.singerDetail = data
-  state.artist = data.artist
-  theme.change(state.artist.avatar)
+  state.value.singerDetail = data
+  state.value.artist = data.artist
+  theme.change(state.value.artist.avatar)
 }
 async function getSingerAlbum(id: number) {
   const { hotAlbums } = await getArtistAlbum(id)
-  state.albums = hotAlbums
+  state.value.albums = hotAlbums
 }
 const alias = computed(() => {
-  return state.artist.alias?.join('；')
+  return state.value.artist.alias?.join('；')
 })
 
 const gotoUserDetail = () => {
   router.push({
     path: '/user-detail',
     query: {
-      uid: state.singerDetail.user!.userId
+      uid: state.value.singerDetail.user!.userId
     }
   })
 }

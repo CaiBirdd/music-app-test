@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { searchDefault, searchHotDetail, searchSuggest } from '@/api/search'
 import List from './List.vue'
@@ -8,8 +8,8 @@ import { useMusicAction } from '@/store/music'
 import { RECORD_KEY, RecordContent } from '@/components/Search/type'
 import { isString } from '@/utils'
 
-const state = reactive({
-  scoreList: [],
+const state = ref({
+  scoreList: [] as any[],
   // 原代码: keywordsList: {}
   // 说明: 标为 any 并提供默认结构，避免访问 order/allMatch 的类型报错
   keywordsList: { order: [], allMatch: [] } as any
@@ -107,12 +107,12 @@ const deleteTag = (index: number) => {
 const focusHandler = async () => {
   showSuggest.value = true
   flags.isOpenSearch = true
-  if (!state.scoreList.length) {
+  if (!state.value.scoreList.length) {
     loading.value = true
   }
   const res = await searchHotDetail()
   loading.value = false
-  state.scoreList = res.data
+  state.value.scoreList = res.data
 }
 const blurHandler = () => {
   setTimeout(() => {
@@ -162,24 +162,24 @@ const getSearchSuggest = async (keywords: string) => {
   loading.value = true
   // 原代码: state.keywordsList = {}
   // 说明: 断言 any，避免后续写入 allMatch/order 报类型错
-  state.keywordsList = {} as any
+  state.value.keywordsList = {} as any
   const [suggest, songs] = await Promise.all([
     searchSuggest(keywords),
     searchSuggest(keywords, 'mobile')
   ])
   // 单曲、专辑、歌手、歌单
   if (Object.keys(suggest)) {
-    state.keywordsList = suggest.result
+    state.value.keywordsList = suggest.result
   }
   // 猜你想搜
   if (Object.keys(songs)) {
-    state.keywordsList.allMatch = songs.result.allMatch
-    if (!state.keywordsList.order) {
-      state.keywordsList.order = []
+    state.value.keywordsList.allMatch = songs.result.allMatch
+    if (!state.value.keywordsList.order) {
+      state.value.keywordsList.order = []
     }
-    state.keywordsList.order.unshift('allMatch')
+    state.value.keywordsList.order.unshift('allMatch')
   }
-  hig(state.keywordsList)
+  hig(state.value.keywordsList)
   loading.value = false
 }
 

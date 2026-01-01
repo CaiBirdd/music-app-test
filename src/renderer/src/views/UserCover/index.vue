@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { getUserRecord } from '@/api/musicList'
 import { useRoute } from 'vue-router'
 import { ElNotification } from 'element-plus'
@@ -9,9 +9,9 @@ import { useMusicAction } from '@/store/music'
 
 const tab = ref()
 const loading = ref(true)
-const state = reactive({
-  recent: [],
-  history: []
+const state = ref({
+  recent: [] as any[],
+  history: [] as any[]
 })
 const recentIds = ref([])
 const historyIds = ref([])
@@ -52,10 +52,10 @@ const getUserRecordHandler = async (type: number) => {
     ...item.song
   }))
   if (type === 0) {
-    state.history = data
+    state.value.history = data
     historyIds.value = data.map((item) => item.id)
   } else {
-    state.recent = data
+    state.value.recent = data
     recentIds.value = data.map((item) => item.id)
   }
   music.updateCurrentItem({ id: 'userCover', tracks: data })

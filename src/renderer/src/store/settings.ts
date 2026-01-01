@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { setBaseURL } from '@/utils/request'
 
 const USER_SETTINGS = 'USER_SETTINGS'
@@ -12,21 +12,21 @@ interface SettingsState {
   font: string
 }
 export const useSettings = defineStore('settingsId', () => {
-  const state: SettingsState = reactive({
+  const state = ref<SettingsState>({
     baseUrl: import.meta.env.VITE_URL,
     lyricBg: 'rhythm',
     bold: true,
     font: 'Avenir, Helvetica, Arial, sans-serif'
   })
-  const initialState = JSON.parse(JSON.stringify(state))
+  const initialState = JSON.parse(JSON.stringify(state.value))
   const $reset = () => setState(initialState)
 
-  const setState = (values?: Partial<typeof state>) => {
-    Object.assign(state, values)
+  const setState = (values?: Partial<SettingsState>) => {
+    Object.assign(state.value, values)
     localStorage.setItem(
       USER_SETTINGS,
       JSON.stringify({
-        ...state,
+        ...state.value,
         ...values
       })
     )
@@ -39,7 +39,7 @@ export const useSettings = defineStore('settingsId', () => {
         const parsedStore: Partial<SettingsState> = JSON.parse(store)
         ;(document.querySelector('#app') as HTMLDivElement)!.style.fontFamily =
           parsedStore.font || ''
-        Object.assign(state, parsedStore)
+        Object.assign(state.value, parsedStore)
       } catch (e) {
         console.error('解析 USER_SETTINGS 时出错:', e)
       }

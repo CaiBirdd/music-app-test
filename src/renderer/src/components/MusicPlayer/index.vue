@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, UnwrapRef } from 'vue'
+import { ref, onMounted, UnwrapRef } from 'vue'
 import { useUserInfo } from '@/store'
 import { useMusicAction } from '@/store/music'
 import ProgressBar from '@/components/MusicPlayer/ProgressBar.vue'
@@ -97,7 +97,7 @@ function play(lengthen: boolean = false) {
     // 音频源无效时静默处理
   })
   isPlay.value = true
-  timeState.stop = false
+  timeState.value.stop = false
 
   // 开始时直接改变就可以，让逐字歌词跟得上
   transitionIsPlay.value = true
@@ -162,7 +162,7 @@ function transitionVolume(
   })
 }
 
-const timeState = reactive({
+const timeState = ref({
   stop: false,
   previousTime: 0 // 新增属性来保存旧的 currentTime
 })
@@ -172,8 +172,8 @@ const timeState = reactive({
  * 注意：不依赖 audio.duration（可能获取不到），只更新 currentTime
  */
 const timeupdate = () => {
-  if (timeState.stop) return
-  timeState.previousTime = music.state.currentTime
+  if (timeState.value.stop) return
+  timeState.value.previousTime = music.state.currentTime
   if (window.$audio) {
     music.state.currentTime = window.$audio.time as any
   }
@@ -185,7 +185,7 @@ const reset = (val: boolean) => {
   transitionIsPlay.value = val
   // 这里需要停止timeupdate的事件监视，因为在暂停音乐时会过渡结束（就相当于还是在播放一段时间），
   //  这样会导致进度条进度重置不及时
-  timeState.stop = true // 在每次play方法时都会重置stop值
+  timeState.value.stop = true // 在每次play方法时都会重置stop值
 }
 const end = () => {
   emit('playEnd')
@@ -199,8 +199,8 @@ const setOrderHandler = () => {
   if (runtimeList?.specialType === 5 && music.state.orderStatusVal === 0 && newValue !== 0) {
     getPlayListDetailFn(runtimeList.id as number, '', false)
     music.updateTracks(
-      playListState.playList,
-      playListState.playList.map((item) => item.id)
+      playListState.value.playList,
+      playListState.value.playList.map((item) => item.id)
     )
   }
 
@@ -244,7 +244,7 @@ Object.defineProperty(exposeObj, 'time', {
 })
 Object.defineProperty(exposeObj, 'oldTime', {
   get(): number {
-    return timeState.previousTime
+    return timeState.value.previousTime
   }
 })
 defineExpose(exposeObj)

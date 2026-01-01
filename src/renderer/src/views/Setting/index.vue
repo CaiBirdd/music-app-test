@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { useSettings } from '@/store/settings'
 import { checkUrlValidity, isElectron } from '@/utils'
 import Versions from '@/components/Versions.vue'
@@ -13,7 +13,7 @@ const urlVerify = ref({
   message: '',
   isValid: true
 })
-let form = reactive({
+let form = ref({
   url: settings.state.baseUrl,
   font: settings.state.font
 })
@@ -39,7 +39,7 @@ const validateUrl = (value: string) => {
 const setBaseUrl = () => {
   snackbar.value = true
   settings.setState({
-    baseUrl: form.url
+    baseUrl: form.value.url
   })
   ElMessage.success({
     message: '修改网络域成功'
@@ -63,11 +63,11 @@ const updateBold = (value) => {
 }
 const setFont = () => {
   settings.setState({
-    font: form.font
+    font: form.value.font
   })
   const appEl = document.querySelector('#app') as HTMLDivElement
   if (appEl) {
-    appEl.style.fontFamily = form.font
+    appEl.style.fontFamily = form.value.font
     ElMessage.success({
       message: '字体设置成功'
     })
