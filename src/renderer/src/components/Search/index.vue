@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { searchDefault, searchHotDetail, searchSuggest } from '@/api/search'
 import List from './List.vue'
@@ -28,6 +28,9 @@ const placeholderInfo = ref({
   realkeyword: '',
   showKeyword: ''
 })
+
+// 用于存储定时器ID，便于组件卸载时清理
+let searchDefaultTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(route, (value) => {
   const { key } = value.query
@@ -183,13 +186,30 @@ const getSearchSuggest = async (keywords: string) => {
   loading.value = false
 }
 
+/**
+ * 获取搜索框默认提示词
+ * 内存优化: 使用可清理的定时器代替递归setTimeout
+ */
 const getSearchDefault = async () => {
   const { data } = await searchDefault()
   placeholderInfo.value.realkeyword = data.realkeyword
   placeholderInfo.value.showKeyword = data.showKeyword
-  setTimeout(getSearchDefault, 30000)
+  // 清理上一个定时器，避免重复创建
+  if (searchDefaultTimer) {
+    clearTimeout(searchDefaultTimer)
+  }
+  // 每30秒刷新一次默认搜索词
+  searchDefaultTimer = setTimeout(getSearchDefault, 30000)
 }
 getSearchDefault()
+
+// 组件卸载时清理定时器，防止内存泄漏
+onUnmounted(() => {
+  if (searchDefaultTimer) {
+    clearTimeout(searchDefaultTimer)
+    searchDefaultTimer = null
+  }
+})
 
 const realkeyword = computed(() => {
   return keywords.value.length ? keywords.value : placeholderInfo.value.realkeyword

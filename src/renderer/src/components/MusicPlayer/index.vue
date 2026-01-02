@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, UnwrapRef } from 'vue'
+import { ref, onMounted, onUnmounted, UnwrapRef } from 'vue'
 import { useUserInfo } from '@/store'
 import { useMusicAction } from '@/store/music'
 import ProgressBar from '@/components/MusicPlayer/ProgressBar.vue'
@@ -46,6 +46,10 @@ const { addListener, executeListener } = useListener(audio)
 const { getPlayListDetailFn } = usePlayList()
 let player: LyricPlayer | null = null
 
+// 内存优化: 保存事件处理器引用，便于移除
+let audioErrorHandler: ((event: any) => void) | null = null
+let audioCanplayHandler: (() => Promise<void>) | null = null
+
 function handleLyricClick(time: number) {
   if (audio.value) {
     audio.value.currentTime = time
@@ -54,17 +58,27 @@ function handleLyricClick(time: number) {
 function seeked() {
   player?.syncIndex()
 }
+
+/**
+ * 初始化歌词播放器
+ * 内存优化: 如果已存在player实例，先销毁再创建新实例
+ */
 function initPlayer() {
-  if (player) return
   const container = document.querySelector('.lyric-container') as HTMLDivElement
-  if (container && audio.value) {
-    player = new LyricPlayer({
-      container,
-      audio: audio.value as unknown as HTMLAudioElement,
-      onLineClick: handleLyricClick
-    })
+  if (!container || !audio.value) return
+
+  // 如果已存在player，先销毁旧实例
+  if (player) {
+    player.destroy()
   }
+
+  player = new LyricPlayer({
+    container,
+    audio: audio.value as unknown as HTMLAudioElement,
+    onLineClick: handleLyricClick
+  })
 }
+
 let originPlay: HTMLMediaElement['play']
 let originPause: HTMLMediaElement['pause']
 
@@ -78,11 +92,35 @@ onMounted(() => {
   // 音量过渡减少为0，然后暂停
   audio.value!.pause = pause as any
 
-  audio.value?.addEventListener('error', (event: any) => {
+  // 保存事件处理器引用，便于清理
+  audioErrorHandler = (event: any) => {
     if (event.target.error.code === 4) {
-      //
+      // 音频源无效
     }
-  })
+  }
+  audio.value?.addEventListener('error', audioErrorHandler)
+})
+
+// 组件卸载时清理所有资源
+onUnmounted(() => {
+  // 清理定时器
+  clearInterval(timer)
+
+  // 销毁歌词播放器
+  if (player) {
+    player.destroy()
+    player = null
+  }
+
+  // 移除事件监听器
+  if (audio.value && audioErrorHandler) {
+    audio.value.removeEventListener('error', audioErrorHandler)
+  }
+
+  // 清理oncanplay事件
+  if (audio.value) {
+    audio.value.oncanplay = null
+  }
 })
 function play(lengthen: boolean = false) {
   let volume = store.volume
@@ -308,6 +346,15 @@ defineExpose(exposeObj)
   align-items: center;
   height: 100%;
   padding: 0 15px;
-  backdrop-filter: blur(60px) saturate(210%);
+  /*
+   * backdrop-filter 性能优化:
+   * 1. 降低blur值从60px到40px，减少GPU采样计算
+   * 2. 使用will-change提示浏览器预优化
+   * 3. 使用transform开启GPU合成层
+   */
+  backdrop-filter: blur(40px) saturate(180%);
+  will-change: backdrop-filter;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 </style>

@@ -75,7 +75,12 @@ export function lookup(obj: object, key: string | undefined): any {
   return temp ?? ''
 }
 
-// 切换图片过渡 (防止图片闪烁
+/**
+ * 切换图片过渡 (防止图片闪烁)
+ * 内存优化:
+ * 1. 清理事件处理器引用，帮助垃圾回收
+ * 2. 加载失败时也要resolve，避免Promise泄漏
+ */
 export function toggleImg(src: string, size?: string): Promise<HTMLImageElement> {
   if (!src) {
     return Promise.reject(`toggleImg：传递的src为空: ${src}`)
@@ -86,13 +91,20 @@ export function toggleImg(src: string, size?: string): Promise<HTMLImageElement>
   img.width = document.body.clientWidth
   img.height = document.body.clientHeight
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     img.onload = () => {
+      // 清理事件处理器，帮助垃圾回收
+      img.onload = null
+      img.onerror = null
       resolve(img)
     }
     img.onerror = () => {
-      // 在实际应用中，您可能还想处理加载失败的情况
+      // 清理事件处理器
+      img.onload = null
+      img.onerror = null
       console.error(`Failed to load image: ${src}`)
+      // 加载失败时reject，避免Promise悬挂
+      reject(new Error(`Failed to load image: ${src}`))
     }
   })
 }

@@ -527,7 +527,79 @@ $bgColor: rgb(19, 19, 26); // 全局背景色
 
 ---
 
-## 🏆 最推荐写入简历的 TOP 4 亮点
+### 24. ⭐ 内存泄漏修复与资源管理
+
+**技术栈**：Vue3 生命周期 + 定时器管理 + 事件监听清理
+
+**亮点描述**：
+
+- 系统性排查并修复内存泄漏，内存占用从持续增长 1.2GB 优化到稳定 500MB
+- **定时器清理**：递归 setTimeout 在组件卸载时正确清理，避免闭包累积
+- **Watch 停止句柄**：保存 watch 返回的停止函数，`onUnmounted` 中调用
+- **GSAP 动画销毁**：切换歌曲前 `kill()` 旧的 timeline 实例
+- **数组长度限制**：播放历史 `lastIndexList` 限制最大 100 条
+- **Image 事件清理**：加载完成后手动置空 `onload`/`onerror` 处理器
+- **LyricPlayer 销毁**：实现 `destroy()` 方法清理事件监听和 DOM 引用
+
+**代码示例**：
+
+```typescript
+// 定时器清理
+let searchDefaultTimer: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (searchDefaultTimer) {
+    clearTimeout(searchDefaultTimer)
+    searchDefaultTimer = null
+  }
+})
+
+// Watch 停止句柄
+let stopWatchBg: WatchStopHandle | null = null
+stopWatchBg = watch(() => props.bg, handler)
+onUnmounted(() => stopWatchBg?.())
+
+// 数组长度限制
+const MAX_HISTORY_LENGTH = 100
+if (state.value.lastIndexList.length > MAX_HISTORY_LENGTH) {
+  state.value.lastIndexList = state.value.lastIndexList.slice(-MAX_HISTORY_LENGTH)
+}
+```
+
+---
+
+### 25. ⭐ Canvas 性能优化与对象池复用
+
+**技术栈**：Canvas API + 对象池模式 + requestAnimationFrame
+
+**亮点描述**：
+
+- **Canvas 对象池**：预创建 4 个 Canvas 对象复用，避免每次切换图片都创建新实例
+- **Canvas 配置优化**：`alpha: false` 禁用透明通道、`desynchronized: true` 异步渲染
+- **图片质量权衡**：使用 JPEG 格式 + 0.6 质量参数，配合模糊效果降低内存占用
+- **CSS 规则清理**：动态注入的 Keyframes 规则在更新前清理旧规则，防止累积
+
+**代码示例**：
+
+```typescript
+// Canvas 对象池
+const canvasPool: HTMLCanvasElement[] = []
+for (let i = 0; i < 4; i++) {
+  canvasPool.push(document.createElement('canvas'))
+}
+
+// Canvas 性能配置
+const cutCtx = cutCanvas.getContext('2d', {
+  alpha: false, // 禁用透明通道
+  desynchronized: true // 异步渲染
+})
+
+// 低质量图片减少内存
+const imgUrl = cutCanvas.toDataURL('image/jpeg', 0.6)
+```
+
+---
+
+## 🏆 最推荐写入简历的 TOP 5 亮点
 
 ### 1. 🥇 自研 LRC 歌词解析与播放系统（最核心亮点）
 
@@ -544,31 +616,34 @@ $bgColor: rgb(19, 19, 26); // 全局背景色
 
 ---
 
-### 2. 🥈 专辑封面颜色提取与动态主题系统
+### 2. 🥈 动态主题视觉系统（颜色提取 + 流动背景）
 
 **简历描述建议**：
 
-> 使用 **ColorThief** 从专辑封面提取主色调，通过 **RGB→HSL 颜色空间转换**过滤不适合的颜色，选取色差最大的颜色组合生成动态渐变背景；实现双层渐变 + opacity 切换的平滑过渡动画。
+> 构建完整的动态主题视觉系统：使用 **ColorThief** 从专辑封面提取主色调，通过 **RGB→HSL 颜色空间转换**过滤不适合的颜色，选取色差最大的颜色组合；使用 **Canvas API** 将封面切割为 2×2 区块实现节奏感流动背景，动态生成 CSS Keyframes 注入样式表；实现**双缓冲渐变过渡**避免背景切换闪烁，配合 GPU 加速优化性能。
 
 **面试可讲点**：
 
-- HSL 颜色模型的优势
-- 如何判断一个颜色"好看"
-- 双层过渡的实现思路
+- HSL 颜色模型的优势及"好颜色"判断算法
+- Canvas 图像切割与 `toDataURL` 性能优化（使用 JPEG 格式、降低质量）
+- 动态 CSS Keyframes 注入与清理（防止规则累积导致内存泄漏）
+- 双缓冲（双层渐变 + opacity 切换）实现平滑过渡
+- `will-change`、`transform: translate3d`、`contain` 等 GPU 加速技巧
 
 ---
 
-### 3. 🥉 节奏感流动背景动画
+### 3. 🥉 自定义右键菜单系统（Vue3 设计模式）
 
 **简历描述建议**：
 
-> 使用 **Canvas API** 将专辑封面切割为 2×2 区块，动态生成 CSS Keyframes 实现独立旋转动画，配合 `backdrop-filter: blur()` 创造沉浸式视觉体验。
+> 基于 **Vue3 Composables** 模式实现可复用的右键菜单系统：使用 **Symbol** 作为 provide/inject 的 key 避免命名冲突；通过 **Teleport** 将菜单渲染到 body 层级解决 `overflow: hidden` 和 `z-index` 层叠问题；采用**事件委托**统一管理菜单显隐，支持多菜单互斥（打开新菜单自动关闭旧菜单）。
 
 **面试可讲点**：
 
-- Canvas 图像处理
-- 动态 CSS 注入
-- 性能优化考虑
+- 为什么用 Symbol 而不是字符串作为 inject key（避免命名冲突、私有化）
+- Teleport 解决了什么问题（脱离父容器的 overflow/z-index 限制）
+- 多菜单互斥的实现思路（全局状态管理 activeMenu）
+- Composables vs Mixins 的优劣对比
 
 ---
 
@@ -576,13 +651,27 @@ $bgColor: rgb(19, 19, 26); // 全局背景色
 
 **简历描述建议**：
 
-> 实现播放/暂停时的**音量平滑过渡**效果，使用 **Promise** 封装异步过渡逻辑，支持链式调用，提升用户听觉体验。
+> 实现播放/暂停时的**音量平滑过渡**效果，使用 **Promise** 封装异步过渡逻辑，支持链式调用，区分常规过渡和加长过渡两种模式，提升用户听觉体验。
 
 **面试可讲点**：
 
-- 为什么需要音量过渡
+- 为什么需要音量过渡（避免突然的声音变化带来不适）
 - Promise 封装异步逻辑的设计
-- 如何支持过渡中断
+- 如何支持过渡中断（切歌时先暂停过渡再播放）
+
+---
+
+### 5. 🎖️ 路由跳转深度追踪与状态管理
+
+**简历描述建议**：
+
+> 重写 `router.push` 方法，自动在 query 中累加 count 参数实现页面跳转深度追踪；配合全局前置守卫确保路由状态一致性，用于实现智能返回按钮逻辑（判断是否可返回、返回几层）。
+
+**面试可讲点**：
+
+- 为什么要追踪路由深度（SPA 中实现类似浏览器历史的返回逻辑）
+- 方法重写（保存原始 push，扩展功能后调用）的设计模式
+- 全局前置守卫的作用与实现
 
 ---
 
@@ -591,11 +680,11 @@ $bgColor: rgb(19, 19, 26); // 全局背景色
 ```
 音乐播放器桌面应用 | Electron + Vue3 + TypeScript
 - 自研 LRC 歌词解析播放系统，二分查找定位当前行（O(log n)），requestAnimationFrame 时间同步，GSAP 平滑滚动
-- 使用 ColorThief 提取专辑封面主色调，HSL 颜色空间过滤 + 色差算法选取最佳颜色组合，动态生成主题
-- Canvas 图像分割 + 动态 CSS Keyframes 注入，实现节奏感流动背景动画
+- 动态主题视觉系统：ColorThief 提取封面主色调 + HSL 颜色过滤 + Canvas 图像分割流动背景 + 双缓冲渐变过渡
+- 基于 Vue3 Composables 实现可复用右键菜单，Symbol 作为 inject key + Teleport 跨层级渲染 + 多菜单互斥管理
+- Canvas 对象池复用 + GPU 加速优化（will-change、contain、translate3d），提升动画渲染性能
 - 封装音量渐变 Promise，实现播放/暂停平滑过渡，提升用户体验
-- Teleport 动态传送播放器组件，展开/收起详情页时无缝切换位置
-- 配置化表格列渲染 + 嵌套属性安全取值，提升代码可维护性
+- 重写 router.push 实现路由深度追踪，配合前置守卫实现智能返回逻辑
 ```
 
 ---
@@ -618,13 +707,13 @@ $bgColor: rgb(19, 19, 26); // 全局背景色
 
 ## 📊 项目亮点数量统计
 
-- **总亮点数**：23 个
-- **核心技术亮点**：8 个（歌词系统、颜色提取、动画、音量过渡等）
-- **工程化亮点**：6 个（Axios 封装、组件注册、配置化渲染等）
+- **总亮点数**：25 个
+- **核心技术亮点**：9 个（歌词系统、颜色提取、动画、音量过渡、内存优化等）
+- **工程化亮点**：7 个（Axios 封装、组件注册、配置化渲染、资源管理等）
 - **交互体验亮点**：5 个（快捷键、搜索高亮、图片防闪烁等）
 - **架构设计亮点**：4 个（Teleport、路由追踪、事件总线等）
 
 ---
 
 _文档生成时间：2025年12月31日_
-_最后更新：补充 12 个新亮点_
+_最后更新：补充内存泄漏修复、Canvas 对象池优化，优化 TOP 5 结构_

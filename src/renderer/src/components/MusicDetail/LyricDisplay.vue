@@ -1,7 +1,7 @@
 ﻿<script lang="ts" setup>
 import { toggleImg } from '@/utils'
 import type { LyricLine } from '@/utils/lyric'
-import { computed, nextTick, onMounted, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onUnmounted, useTemplateRef, watch, type WatchStopHandle } from 'vue'
 import gsap from 'gsap'
 import { useRouter } from 'vue-router'
 import { useFlags } from '@/store/flags'
@@ -21,11 +21,17 @@ const router = useRouter()
 const flash = useFlags()
 const videoCover = useTemplateRef<HTMLVideoElement>('videoCover')
 
+// 内存优化: 保存watch停止句柄和GSAP动画实例，便于清理
+let stopWatchPlay: WatchStopHandle | null = null
+let stopWatchBg: WatchStopHandle | null = null
+let currentTimeline: gsap.core.Timeline | null = null
+
 nextTick(() => {
   const bgEl = document.querySelector('.cover-container') as HTMLDivElement
   const coverEl = document.querySelector('.img-cover') as HTMLDivElement
 
-  watch(
+  // 保存watch停止句柄
+  stopWatchPlay = watch(
     () => window.$audio?.isPlay,
     (value) => {
       if (!props.videoPlayUrl) {
@@ -38,29 +44,36 @@ nextTick(() => {
       }
     }
   )
-  watch(
+
+  stopWatchBg = watch(
     () => props.bg,
     async (val) => {
-      if (!bgEl || !val) return // 如果找不到元素，直接返回
+      if (!bgEl || !val) return
+
+      // 清理上一个动画，防止动画累积
+      if (currentTimeline) {
+        currentTimeline.kill()
+      }
+
       // 创建一个 GSAP 时间轴
-      const tl = gsap.timeline()
+      currentTimeline = gsap.timeline()
       // 使用时间轴先缩小元素
-      tl.to(bgEl, {
+      currentTimeline.to(bgEl, {
         height: '10vh',
         width: '10vh',
-        duration: 0.3, // 缩小动画时长，单位为秒
-        ease: 'power1.out', // 缓动函数
-        transformOrigin: 'center' // 确保缩放围绕中心
+        duration: 0.3,
+        ease: 'power1.out',
+        transformOrigin: 'center'
       })
 
       toggleImg(val, '600y600').then((img) => {
-        tl.to(bgEl, {
+        if (!currentTimeline) return
+        currentTimeline.to(bgEl, {
           height: '45vh',
           width: '45vh',
-          duration: 0.3, // 放大动画时长，单位为秒
-          ease: 'power1.out', // 缓动函数
-          transformOrigin: 'center', // 确保缩放围绕中心
-          // 在动画开始时设置背景图片
+          duration: 0.3,
+          ease: 'power1.out',
+          transformOrigin: 'center',
           onStart: () => {
             if (!props.videoPlayUrl) {
               ;(coverEl as HTMLDivElement).style.backgroundImage = `url(${img.src})`
@@ -71,6 +84,19 @@ nextTick(() => {
     },
     { immediate: true }
   )
+})
+
+// 组件卸载时清理所有资源
+onUnmounted(() => {
+  // 停止watch
+  stopWatchPlay?.()
+  stopWatchBg?.()
+
+  // 清理GSAP动画
+  if (currentTimeline) {
+    currentTimeline.kill()
+    currentTimeline = null
+  }
 })
 const arNames = computed(() => {
   let result = ''
@@ -125,6 +151,12 @@ const arNames = computed(() => {
 </template>
 
 <style scoped lang="scss">
+/*
+ * 歌词显示层性能优化说明:
+ * 1. backdrop-filter 是高开销属性，使用 will-change 提示浏览器预优化
+ * 2. 使用 contain 属性隔离重绘范围
+ * 3. 使用 transform: translate3d 开启GPU合成层
+ */
 .shadow {
   backdrop-filter: blur(8px);
   position: absolute;
@@ -133,18 +165,32 @@ const arNames = computed(() => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  /* GPU加速优化 - backdrop-filter是高开销属性 */
+  will-change: backdrop-filter;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  /* 限制重绘范围 */
+  contain: layout style;
+
   .lyric-and-bg-container {
     display: flex;
     margin-top: 17vh;
     justify-content: space-evenly;
     align-items: center;
     height: 58vh;
-    transition: 1s;
+    /* 优化: 仅对transform属性使用过渡，避免触发全属性过渡 */
+    transition: transform 1s ease-out;
+
     .cover-container {
       width: 45vh;
       transform-origin: center;
-      transition: 0.8s;
+      /* 优化: 明确指定过渡属性 */
+      transition:
+        width 0.8s ease-out,
+        height 0.8s ease-out;
+      will-change: width, height;
     }
+
     .title {
       font-size: 25px;
       font-weight: 500;
@@ -152,18 +198,22 @@ const arNames = computed(() => {
       cursor: pointer;
       @include textOverflow(1);
     }
+
     .video-cover {
       height: 100%;
       width: 100%;
       border-radius: 5px;
     }
+
     .img-cover {
       height: 100%;
       width: 100%;
       border-radius: 5px;
-      transition: 0.8s;
+      /* 优化: 仅对背景图过渡 */
+      transition: background-image 0.8s ease-out;
       @extend .bgSetting;
     }
+
     .lyric-container {
       height: 145%;
       width: 42vw;
@@ -178,6 +228,9 @@ const arNames = computed(() => {
         transparent
       );
       position: relative;
+      /* 优化滚动性能 */
+      will-change: scroll-position;
+      contain: layout style;
     }
   }
 }

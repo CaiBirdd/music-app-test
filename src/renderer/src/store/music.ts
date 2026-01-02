@@ -54,10 +54,20 @@ export const useMusicAction = defineStore('musicActionId', () => {
     index: 0,
     searchList: []
   })
+  /**
+   * 监听歌曲索引变化，记录播放历史
+   * 内存优化: 限制历史记录最大长度为100条，防止内存持续增长
+   */
   watch(
     () => state.value.index,
     (value, oldValue) => {
       state.value.lastIndexList.push(oldValue)
+      // 限制历史记录最大长度，防止内存泄漏
+      const MAX_HISTORY_LENGTH = 100
+      if (state.value.lastIndexList.length > MAX_HISTORY_LENGTH) {
+        // 只保留最近的记录
+        state.value.lastIndexList = state.value.lastIndexList.slice(-MAX_HISTORY_LENGTH)
+      }
     }
   )
   const updateSearchList = (val: any) => {
@@ -131,21 +141,14 @@ export const useMusicAction = defineStore('musicActionId', () => {
         // 监听audio是否加载完毕
         localStorage.setItem('MUSIC_CONFIG', JSON.stringify({ ...state.value, load: true }))
 
+        /**
+         * 内存优化: 先清理旧的 oncanplay 处理器，避免闭包累积
+         * 每次设置新的 oncanplay 前，将旧的设为 null
+         */
+        window.$audio.el.oncanplay = null
         window.$audio.el.oncanplay = async () => {
           try {
             await window.$audio.play()
-            // localStorage.setItem('MUSIC_CONFIG', JSON.stringify({
-            //   songs: item,
-            //   lyric: state.lyric,
-            //   lrcMode: state.lrcMode,
-            //   videoPlayUrl: state.videoPlayUrl,
-            //   index: index.value,
-            //   musicUrl: state.musicUrl,
-            //   runtimeIds: state.runtimeIds,
-            //   orderStatusVal: state.orderStatusVal,
-            //   runtimeList: state.runtimeList,
-            //   bgColor: state.bgColor,
-            // }))
           } catch (error) {
             console.error('播放失败:', error)
           }

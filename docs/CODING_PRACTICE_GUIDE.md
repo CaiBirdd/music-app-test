@@ -10,8 +10,8 @@
 
 | 级别        | 文件数 | 预计耗时   | 说明                   |
 | ----------- | ------ | ---------- | ---------------------- |
-| 🔴 必须手敲 | 15 个  | 15-17 小时 | 核心亮点，面试必问     |
-| 🟡 建议手敲 | 14 个  | 4-6 小时   | 重要功能，有余力再敲   |
+| 🔴 必须手敲 | 17 个  | 16-18 小时 | 核心亮点，面试必问     |
+| 🟡 建议手敲 | 12 个  | 3-5 小时   | 重要功能，有余力再敲   |
 | 🟢 看懂即可 | 95 个  | 2-3 小时   | 通用代码，理解逻辑即可 |
 
 > 💡 **说明**：「必须手敲」已按依赖关系排序，请按顺序学习
@@ -28,23 +28,25 @@
 
 ### 📋 必须手敲文件总览（按推荐顺序排列）
 
-| 序号 | 文件            | 路径                                     | 代码行 | 依赖的其他文件                  |
-| ---- | --------------- | ---------------------------------------- | ------ | ------------------------------- |
-| 1    | parser.ts       | `utils/lyric/parser.ts`                  | ~150   | 无依赖 ✅                       |
-| 2    | player.ts       | `utils/lyric/player.ts`                  | ~310   | parser.ts、gsap                 |
-| 3    | style.scss      | `utils/lyric/style.scss`                 | ~60    | 无依赖 ✅                       |
-| 4    | index.ts        | `utils/lyric/index.ts`                   | ~5     | parser.ts                       |
-| 5    | index.ts        | `utils/index.ts`                         | ~315   | 无依赖 ✅                       |
-| 6    | useMusic.ts     | `components/MusicDetail/useMusic.ts`     | ~150   | colorthief                      |
-| 7    | FlowBg.vue      | `components/MusicDetail/FlowBg.vue`      | ~70    | useMusic.ts、utils/index.ts     |
-| 8    | listener.ts     | `components/MusicPlayer/listener.ts`     | ~60    | 无依赖 ✅                       |
-| 9    | ProgressBar.vue | `components/MusicPlayer/ProgressBar.vue` | ~120   | store/music.ts                  |
-| 10   | index.vue       | `components/MusicPlayer/index.vue`       | ~310   | listener.ts、lyric、store       |
-| 11   | music.ts        | `store/music.ts`                         | ~250   | lyric/parser.ts、utils/index.ts |
-| 12   | index.ts        | `store/index.ts`                         | ~135   | 无依赖 ✅                       |
-| 13   | index.ts        | `router/index.ts`                        | ~80    | utils/index.ts、store/flags.ts  |
-| 14   | request.ts      | `utils/request.ts`                       | ~65    | 无依赖 ✅                       |
-| 15   | App.vue         | `App.vue`                                | ~100   | store、MusicPlayer、MusicDetail |
+| 序号 | 文件                  | 路径                                       | 代码行 | 依赖的其他文件                  |
+| ---- | --------------------- | ------------------------------------------ | ------ | ------------------------------- |
+| 1    | parser.ts             | `utils/lyric/parser.ts`                    | ~150   | 无依赖 ✅                       |
+| 2    | player.ts             | `utils/lyric/player.ts`                    | ~310   | parser.ts、gsap                 |
+| 3    | style.scss            | `utils/lyric/style.scss`                   | ~60    | 无依赖 ✅                       |
+| 4    | index.ts              | `utils/lyric/index.ts`                     | ~5     | parser.ts                       |
+| 5    | index.ts              | `utils/index.ts`                           | ~315   | 无依赖 ✅                       |
+| 6    | useMusic.ts           | `components/MusicDetail/useMusic.ts`       | ~150   | colorthief                      |
+| 7    | FlowBg.vue            | `components/MusicDetail/FlowBg.vue`        | ~70    | useMusic.ts、utils/index.ts     |
+| 8    | listener.ts           | `components/MusicPlayer/listener.ts`       | ~60    | 无依赖 ✅                       |
+| 9    | ProgressBar.vue       | `components/MusicPlayer/ProgressBar.vue`   | ~120   | store/music.ts                  |
+| 10   | index.vue             | `components/MusicPlayer/index.vue`         | ~310   | listener.ts、lyric、store       |
+| 11   | music.ts              | `store/music.ts`                           | ~250   | lyric/parser.ts、utils/index.ts |
+| 12   | index.ts              | `store/index.ts`                           | ~135   | 无依赖 ✅                       |
+| 13   | index.ts              | `router/index.ts`                          | ~80    | utils/index.ts、store/flags.ts  |
+| 14   | request.ts            | `utils/request.ts`                         | ~65    | 无依赖 ✅                       |
+| 15   | useContextMenu.ts     | `components/ContextMenu/useContextMenu.ts` | ~25    | 无依赖 ✅                       |
+| 16   | ContextMenu/index.vue | `components/ContextMenu/index.vue`         | ~130   | useContextMenu.ts               |
+| 17   | App.vue               | `App.vue`                                  | ~100   | store、MusicPlayer、MusicDetail |
 
 ---
 
@@ -138,8 +140,9 @@
 - `lookup()` 嵌套属性安全取值
 - `toggleImg()` 图片预加载防闪烁
 - `animation()` 基于时间的动画执行器
+- **内存优化**：Image 对象事件处理器清理（onload/onerror 置 null）
 
-**面试考点**：HSL 颜色空间？嵌套取值怎么实现？图片预加载原理？
+**面试考点**：HSL 颜色空间？嵌套取值怎么实现？图片预加载原理？为什么需要清理 Image 事件处理器？
 
 ---
 
@@ -166,8 +169,9 @@
 - `colorExtraction()` 调用 ColorThief 提取调色板
 - `gradualChange()` 双层渐变过渡动画
 - `useRhythm()` Canvas 切图 + 动态 CSS Keyframes 注入
+- **性能优化**：Canvas 对象池复用、CSS 规则清理、JPEG 格式降质量
 
-**面试考点**：ColorThief 原理？Canvas drawImage？动态 CSS 注入？
+**面试考点**：ColorThief 原理？Canvas drawImage？动态 CSS 注入？如何防止 CSS 规则累积导致内存泄漏？
 
 ---
 
@@ -191,6 +195,8 @@
 
 - watch 监听图片切换
 - 触发颜色提取和背景更新
+- **性能优化**：GPU 加速（will-change、transform3d）、降低 blur 值（120px→80px）
+- **内存优化**：watch 停止句柄保存、组件卸载时清理资源
 
 ---
 
@@ -269,8 +275,9 @@
 - 重写 audio.play/pause 方法
 - 歌词播放器初始化与同步
 - 播放模式切换（心动/顺序/随机/单曲）
+- **内存优化**：LyricPlayer 销毁、事件监听器清理、oncanplay 闭包清理
 
-**面试考点**：Promise 封装音量过渡？为什么重写 play/pause？播放模式如何实现？
+**面试考点**：Promise 封装音量过渡？为什么重写 play/pause？播放模式如何实现？如何防止 LyricPlayer 实例泄漏？
 
 ---
 
@@ -301,8 +308,9 @@
 - 播放列表管理
 - 心动模式智能推荐
 - bgColor 主题色更新
+- **内存优化**：lastIndexList 长度限制（最大100条）、oncanplay 处理器清理
 
-**面试考点**：Pinia 组合式写法？状态如何持久化？心动模式怎么实现？
+**面试考点**：Pinia 组合式写法？状态如何持久化？心动模式怎么实现？如何防止状态数组无限增长？
 
 ---
 
@@ -376,9 +384,60 @@
 
 ---
 
-#### 第七阶段：全局布局（收尾）⭐⭐⭐
+#### 第七阶段：右键菜单系统（Vue3 设计模式亮点）⭐⭐⭐⭐⭐
 
-**顺序 15：App.vue**
+> 🎯 这是 **TOP 5 面试亮点之一**，展示 Vue3 高级设计模式理解
+
+**顺序 15：useContextMenu.ts（菜单状态管理）**
+
+```
+📁 src/renderer/src/components/ContextMenu/useContextMenu.ts
+📊 约 25 行
+🔗 依赖：无，可直接开始
+📚 前置知识：
+   - Symbol 的唯一性特性（避免命名冲突）
+   - Vue3 ref 响应式
+```
+
+**核心内容**：
+
+- **Symbol 作为 provide/inject key**（私有化、避免冲突）
+- 菜单状态管理（activeMenu）
+- 多菜单互斥逻辑（打开新菜单自动关闭旧菜单）
+
+**面试考点**：为什么用 Symbol 而不是字符串？多菜单互斥怎么实现？
+
+---
+
+**顺序 16：ContextMenu/index.vue（菜单组件）**
+
+```
+📁 src/renderer/src/components/ContextMenu/index.vue
+📊 约 130 行
+🔗 代码依赖：
+   - useContextMenu.ts → MENU_KEY、useContextMenu
+📚 前置知识：
+   - Vue3 inject 依赖注入
+   - Teleport 传送门组件
+   - CSS backdrop-filter 毛玻璃效果
+   - contextmenu 事件与 preventDefault
+```
+
+**核心内容**：
+
+- **Teleport 跨层级渲染**（解决 overflow/z-index 问题）
+- **事件委托**统一管理菜单（showMenu/hideMenu）
+- 右键位置计算（clientX/clientY）
+- 点击外部关闭菜单（handleClickOutside）
+- 毛玻璃视觉效果
+
+**面试考点**：Teleport 解决什么问题？如何检测点击外部？
+
+---
+
+#### 第八阶段：全局布局（收尾）⭐⭐⭐
+
+**顺序 17：App.vue**
 
 ```
 📁 src/renderer/src/App.vue
@@ -388,7 +447,7 @@
    - store/flags.ts → useFlags
    - store/index.ts → useUserInfo
    - store/settings.ts → useSettings
-   - components/ContextMenu/useContextMenu.ts → provide 菜单状态
+   - components/ContextMenu/useContextMenu.ts → provide 菜单状态（已敲完）
    - layout/ → Header、Aside、Bottom（看懂即可）
    - components/MusicPlayer、MusicDetail、Login（已敲完或看懂）
    - utils/shortcutKey.ts → 快捷键初始化（看懂即可）
@@ -415,29 +474,7 @@
 >
 > ⚠️ 以下文件可在完成「必须手敲」后按顺序练习
 
-### 1. 右键菜单⭐⭐⭐⭐
-
-| 序号 | 文件                  | 路径                                                        | 代码行数 | 依赖文件          |
-| ---- | --------------------- | ----------------------------------------------------------- | -------- | ----------------- |
-| 1    | **useContextMenu.ts** | `src/renderer/src/components/ContextMenu/useContextMenu.ts` | ~25 行   | 无                |
-| 2    | **index.vue**         | `src/renderer/src/components/ContextMenu/index.vue`         | ~120 行  | useContextMenu.ts |
-
-```
-📚 前置知识：
-   - Symbol 的唯一性特性
-   - Vue3 provide/inject 依赖注入
-   - Teleport 传送门组件
-   - CSS backdrop-filter 毛玻璃效果
-```
-
-**面试考点**：
-
-- 为什么用 Symbol 作为 inject key？（避免命名冲突）
-- Teleport 有什么作用？（脱离 DOM 层级限制）
-
----
-
-### 2. 搜索组件⭐⭐⭐⭐
+### 1. 搜索组件⭐⭐⭐⭐
 
 | 序号 | 文件             | 路径                                              | 代码行数 | 依赖文件                     |
 | ---- | ---------------- | ------------------------------------------------- | -------- | ---------------------------- |
@@ -460,10 +497,11 @@
 
 - 搜索关键词高亮怎么实现？（正则替换 + v-html）
 - 搜索历史如何持久化？（localStorage + Symbol key）
+- **内存优化**：setTimeout 递归调用需要清理（onUnmounted 中 clearTimeout）
 
 ---
 
-### 3. 歌曲列表⭐⭐⭐⭐
+### 2. 歌曲列表⭐⭐⭐⭐
 
 | 序号 | 文件          | 路径                                             | 代码行数 | 依赖文件                  |
 | ---- | ------------- | ------------------------------------------------ | -------- | ------------------------- |
@@ -484,10 +522,11 @@
 
 - 配置化渲染的好处？（复用性高、易于维护）
 - Web Animations API 怎么用？（替代 CSS transition 实现复杂动画）
+- **内存优化**：itemRefs DOM 引用清理（列表更新时删除不存在的项）
 
 ---
 
-### 4. 登录组件⭐⭐⭐
+### 3. 登录组件⭐⭐⭐
 
 | 序号 | 文件          | 路径                                          | 代码行数 | 依赖文件                     |
 | ---- | ------------- | --------------------------------------------- | -------- | ---------------------------- |
@@ -511,7 +550,7 @@
 
 ---
 
-### 5. Electron 主进程⭐⭐⭐
+### 4. Electron 主进程⭐⭐⭐
 
 | 序号 | 文件          | 路径                 | 代码行数 | 依赖文件  |
 | ---- | ------------- | -------------------- | -------- | --------- |
@@ -536,14 +575,14 @@
 
 ---
 
-### 6. 其他重要文件⭐⭐⭐
+### 5. 其他重要文件⭐⭐⭐
 
-| 文件                      | 路径                                                       | 代码行数 | 手敲原因                | 前置知识               |
-| ------------------------- | ---------------------------------------------------------- | -------- | ----------------------- | ---------------------- |
-| **shortcutKey.ts**        | `src/renderer/src/utils/shortcutKey.ts`                    | ~35 行   | 全局快捷键              | keydown 事件、keyCode  |
-| **usePlayList.ts**        | `src/renderer/src/layout/BaseAside/usePlayList.ts`         | ~90 行   | 歌单数据获取逻辑        | 组合式函数封装         |
-| **LyricDisplay.vue**      | `src/renderer/src/components/MusicDetail/LyricDisplay.vue` | ~185 行  | 歌词展示、GSAP 封面动画 | 先敲完 lyric/player.ts |
-| **MusicDetail/index.vue** | `src/renderer/src/components/MusicDetail/index.vue`        | ~150 行  | 音乐详情弹窗            | 先敲完 FlowBg.vue      |
+| 文件                      | 路径                                                       | 代码行数 | 手敲原因                          | 前置知识               |
+| ------------------------- | ---------------------------------------------------------- | -------- | --------------------------------- | ---------------------- |
+| **shortcutKey.ts**        | `src/renderer/src/utils/shortcutKey.ts`                    | ~35 行   | 全局快捷键                        | keydown 事件、keyCode  |
+| **usePlayList.ts**        | `src/renderer/src/layout/BaseAside/usePlayList.ts`         | ~90 行   | 歌单数据获取逻辑                  | 组合式函数封装         |
+| **LyricDisplay.vue**      | `src/renderer/src/components/MusicDetail/LyricDisplay.vue` | ~185 行  | 歌词展示、GSAP 封面动画、内存优化 | 先敲完 lyric/player.ts |
+| **MusicDetail/index.vue** | `src/renderer/src/components/MusicDetail/index.vue`        | ~150 行  | 音乐详情弹窗                      | 先敲完 FlowBg.vue      |
 
 ---
 
@@ -772,26 +811,183 @@
 
 ---
 
-### 第五天：请求封装 + 全局布局（2 小时）⭐⭐⭐
+### 第五天：请求封装 + 右键菜单 + 全局布局（3 小时）⭐⭐⭐⭐
 
-| 顺序 | 文件       | 耗时     | 重点内容                 |
-| ---- | ---------- | -------- | ------------------------ |
-| 14   | request.ts | 0.5 小时 | Axios 拦截器             |
-| 15   | App.vue    | 1.5 小时 | Teleport、provide/inject |
+| 顺序 | 文件                  | 耗时     | 重点内容                          |
+| ---- | --------------------- | -------- | --------------------------------- |
+| 14   | request.ts            | 0.5 小时 | Axios 拦截器                      |
+| 15   | useContextMenu.ts     | 0.5 小时 | Symbol key、多菜单互斥            |
+| 16   | ContextMenu/index.vue | 0.5 小时 | Teleport 跨层级、点击外部关闭     |
+| 17   | App.vue               | 1.5 小时 | Teleport 动态切换、provide/inject |
 
-**今日目标**：能解释 Axios 拦截器设计，能解释 Teleport 动态切换
+**今日目标**：能解释 Symbol 作为 inject key 的优势，能手写右键菜单核心逻辑
 
 ---
 
 ### 有余力继续（可选）
 
-| 优先级 | 文件               | 说明             |
-| ------ | ------------------ | ---------------- |
-| 高     | ContextMenu/       | Symbol + provide |
-| 高     | Search/index.vue   | 搜索高亮、防抖   |
-| 中     | SongList/index.vue | 配置化渲染       |
-| 中     | Login/index.vue    | 扫码轮询状态机   |
-| 低     | src/main/index.ts  | Electron IPC     |
+| 优先级 | 文件               | 说明           |
+| ------ | ------------------ | -------------- |
+| 高     | Search/index.vue   | 搜索高亮、防抖 |
+| 中     | SongList/index.vue | 配置化渲染     |
+| 中     | Login/index.vue    | 扫码轮询状态机 |
+| 低     | src/main/index.ts  | Electron IPC   |
+
+---
+
+## ⚡ 性能优化与内存泄漏修复（重要补充）
+
+> 📢 **重要更新**：项目已完成三次性能优化，这些优化点也是面试高频考点
+
+### 优化概览
+
+| 优化类型         | 涉及文件                                  | 优化内容                         | 面试价值   |
+| ---------------- | ----------------------------------------- | -------------------------------- | ---------- |
+| **模糊背景性能** | useMusic.ts、FlowBg.vue、LyricDisplay.vue | GPU加速、降低blur值、CSS规则清理 | ⭐⭐⭐⭐   |
+| **内存泄漏修复** | 6个文件                                   | Watch清理、GSAP清理、定时器清理  | ⭐⭐⭐⭐⭐ |
+| **搜索页面专项** | SearchList/config.ts、SongList/index.vue  | Blob URL释放、DOM引用清理        | ⭐⭐⭐⭐   |
+
+### 核心优化点速查
+
+#### 1. useMusic.ts - Canvas 和 CSS 优化
+
+```typescript
+// ✅ 优化后：Canvas 对象池复用
+const canvasPool: HTMLCanvasElement[] = []
+for (let i = 0; i < 4; i++) {
+  canvasPool.push(document.createElement('canvas'))
+}
+
+// ✅ 优化后：清理旧 CSS 规则
+const clearOldRules = () => {
+  while (insertedRulesCount > 0) {
+    stylesheet.deleteRule(stylesheet.cssRules.length - 1)
+    insertedRulesCount--
+  }
+}
+```
+
+**面试考点**：为什么需要清理 CSS 规则？Canvas 对象池有什么好处？
+
+#### 2. FlowBg.vue - GPU 加速
+
+```scss
+#rhythm-box {
+  filter: blur(80px); /* 从 120px 降低到 80px */
+  will-change: filter;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+```
+
+**面试考点**：will-change 的作用？为什么降低 blur 值能提升性能？
+
+#### 3. LyricDisplay.vue - GSAP 和 Watch 清理
+
+```typescript
+// ✅ 优化后：保存 watch 停止句柄
+let stopWatchBg: WatchStopHandle | null = null
+stopWatchBg = watch(() => props.bg, ...)
+
+// ✅ 优化后：清理 GSAP 动画
+if (currentTimeline) {
+  currentTimeline.kill()
+}
+currentTimeline = gsap.timeline()
+
+onUnmounted(() => {
+  stopWatchBg?.()
+  currentTimeline?.kill()
+})
+```
+
+**面试考点**：为什么需要手动清理 watch？GSAP 动画不清理会怎样？
+
+#### 4. MusicPlayer/index.vue - LyricPlayer 销毁
+
+```typescript
+// ✅ 优化后：组件卸载时销毁实例
+onUnmounted(() => {
+  if (player) {
+    player.destroy() // 清理事件监听器和 DOM 引用
+    player = null
+  }
+  if (audio.value) {
+    audio.value.oncanplay = null // 清理闭包
+  }
+})
+```
+
+**面试考点**：为什么需要手动调用 destroy？oncanplay 不清理会怎样？
+
+#### 5. store/music.ts - 数组长度限制
+
+```typescript
+// ✅ 优化后：限制历史记录最大长度
+watch(
+  () => state.value.index,
+  (value, oldValue) => {
+    state.value.lastIndexList.push(oldValue)
+    const MAX_HISTORY_LENGTH = 100
+    if (state.value.lastIndexList.length > MAX_HISTORY_LENGTH) {
+      state.value.lastIndexList = state.value.lastIndexList.slice(-MAX_HISTORY_LENGTH)
+    }
+  }
+)
+```
+
+**面试考点**：为什么需要限制数组长度？如何选择合适的上限？
+
+#### 6. SearchList/config.ts - Blob URL 释放
+
+```typescript
+// ✅ 优化后：下载完成后释放 Blob URL
+fetch(url)
+  .then((response) => response.blob())
+  .then((blob) => {
+    const blobUrl = URL.createObjectURL(blob)
+    link.href = blobUrl
+    link.click()
+    // 内存优化：释放 Blob URL
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl)
+    }, 1000)
+  })
+```
+
+**面试考点**：Blob URL 不释放会怎样？为什么用 setTimeout？
+
+#### 7. SongList/index.vue - DOM 引用清理
+
+```typescript
+// ✅ 优化后：列表更新时清理不存在的项
+watch(
+  () => props.list,
+  (val) => {
+    const currentIds = new Set(val.map((item) => item.id))
+    Object.keys(itemRefs.value).forEach((key) => {
+      const id = Number(key)
+      if (!currentIds.has(id)) {
+        delete itemRefs.value[id] // 清理 DOM 引用
+      }
+    })
+  }
+)
+```
+
+**面试考点**：为什么需要清理 DOM 引用？不清理会导致什么问题？
+
+### 内存泄漏排查技巧
+
+1. **Chrome DevTools Memory 面板**：拍摄快照对比内存增长
+2. **Performance Monitor**：观察 JS heap size 趋势
+3. **常见泄漏模式**：定时器、事件监听器、闭包、DOM 引用、全局变量
+
+### 相关文档
+
+- 📄 [模糊背景效果性能优化](./BLUR_EFFECT_OPTIMIZATION.md)
+- 📄 [内存泄漏修复优化](./MEMORY_LEAK_FIX.md)
 
 ---
 
@@ -837,6 +1033,53 @@
 
 **答**：观察者模式是目标和观察者直接交互，发布订阅模式有一个中间的事件通道（Event Bus）解耦发布者和订阅者。项目中的 listener.ts 就是发布订阅模式，组件之间通过事件名通信，互不依赖。
 
+### Q11: 右键菜单系统是怎么设计的？（TOP 5 亮点）
+
+**答**：主要有三个设计要点：
+
+1. **Symbol 作为 inject key**：避免不同组件库或模块之间的命名冲突，保证私有化
+2. **Teleport 跨层级渲染**：将菜单渲染到 body 层级，脱离父容器的 overflow:hidden 和 z-index 限制
+3. **多菜单互斥管理**：通过 activeMenu 全局状态，打开新菜单时自动关闭旧菜单
+
+还用了事件委托统一管理菜单显隐，点击外部自动关闭，以及 CSS backdrop-filter 实现毛玻璃效果。
+
+### Q12: Composables 和 Mixins 有什么区别？为什么推荐 Composables？
+
+**答**：
+
+- **Mixins 的问题**：命名冲突、来源不清晰、类型推断差
+- **Composables 优势**：
+  - 明确的导入导出，来源清晰
+  - 可以利用 TypeScript 完整类型推断
+  - 没有 this 上下文问题
+  - 更灵活的组合方式
+
+项目中的 useContextMenu、useMusic、usePlayList 都是 Composables 模式。
+
+### Q13: 如何防止内存泄漏？项目中做了哪些优化？
+
+**答**：主要做了三类优化：
+
+1. **资源清理**：watch 停止句柄、GSAP 动画 kill、定时器 clear、事件监听器 remove
+2. **引用管理**：DOM 引用清理、Blob URL 释放、数组长度限制
+3. **闭包处理**：Image 事件处理器置 null、oncanplay 先置 null 再赋值
+
+具体案例：LyricPlayer 在组件卸载时调用 destroy()，GSAP timeline 每次创建前先 kill 旧的，Blob URL 下载后 1 秒释放。
+
+### Q14: 为什么需要清理 CSS 规则？Canvas 对象池有什么好处？
+
+**答**：
+
+- **CSS 规则清理**：每次切换图片都插入新的 @keyframes，不清理会导致规则累积，内存持续增长，样式计算开销增大
+- **Canvas 对象池**：避免频繁创建和销毁对象，减少 GC 压力，提升性能。4 个 canvas 对象复用，只更新内容不重新创建。
+
+### Q15: Blob URL 不释放会怎样？为什么用 setTimeout？
+
+**答**：
+
+- **不释放的后果**：Blob URL 持有整个文件的二进制数据，一首 MP3 约 10-20MB，下载 5-10 首就会占用上百 MB 内存
+- **setTimeout 原因**：确保下载已经开始后再释放，给浏览器足够时间处理下载请求。1 秒延迟是经验值，既能及时释放又不会影响下载。
+
 ---
 
 ## 📋 快速参考表
@@ -876,8 +1119,14 @@
 | Promise 封装     | resolve/reject、异步流程控制            | MusicPlayer/index    |
 | computed get/set | 双向绑定、响应式                        | ProgressBar.vue      |
 | Pinia vs Vuex    | 轻量、TS 支持、组合式 API、无 mutations | store/music.ts       |
+| Symbol key       | 唯一性、避免命名冲突、私有化            | useContextMenu.ts    |
+| Composables      | 逻辑复用、类型推断、无 this 问题        | useContextMenu.ts    |
 | provide/inject   | 跨层级通信、Symbol key                  | App.vue, ContextMenu |
-| Teleport         | DOM 位置、disabled 动态切换             | App.vue, ContextMenu |
+| Teleport         | DOM 位置、disabled 动态切换、跨层级     | App.vue, ContextMenu |
+| 多菜单互斥       | activeMenu 全局状态、自动关闭旧菜单     | ContextMenu/         |
+| 内存泄漏         | watch/GSAP/定时器清理、Blob URL 释放    | 多个文件             |
+| GPU 加速         | will-change、transform3d、contain       | FlowBg.vue           |
+| 性能优化         | Canvas 对象池、CSS 规则清理             | useMusic.ts          |
 
 ---
 
@@ -889,7 +1138,7 @@
 
 ### Q: 如果某个依赖文件太复杂，可以跳过吗？
 
-**A**: 可以。比如 `api/*.ts` 这类 API 调用文件，只需要知道它返回什么数据即可，不需要深入研究。重点放在「必须手敲」的 15 个文件上。
+**A**: 可以。比如 `api/*.ts` 这类 API 调用文件，只需要知道它返回什么数据即可，不需要深入研究。重点放在「必须手敲」的 17 个文件上。
 
 ### Q: 手敲完一个文件后怎么验证？
 
@@ -981,10 +1230,12 @@
 - [ ] 能解释路由深度追踪实现（重写 push 累加 count）
 - [ ] 能解释 router.push 重写的目的（前进/后退按钮可用性）
 
-### 阶段五：工程化
+### 阶段五：工程化与右键菜单
 
 - [ ] 能解释 Axios 请求拦截器（Cookie 注入、时间戳防缓存）
 - [ ] 能解释 Axios 响应拦截器（统一错误处理）
+- [ ] 能解释为什么用 Symbol 作为 inject key（唯一性、避免冲突）
+- [ ] 能手写多菜单互斥逻辑（activeMenu 状态管理）
 - [ ] 能解释 Teleport 的 disabled 动态切换场景
 - [ ] 能解释 provide/inject + Symbol 用法及优势
 - [ ] 能说出 Electron 主进程与渲染进程至少 3 个区别
@@ -995,7 +1246,7 @@
 
 完成本指南后，你应该能够：
 
-1. **技术深度**：对 15 个核心文件的实现原理了如指掌
+1. **技术深度**：对 17 个核心文件的实现原理了如指掌
 2. **表达能力**：能用 1-2 分钟清晰讲解任意一个技术点
 3. **应变能力**：面对追问能从原理层面回答
 4. **项目理解**：能画出项目的整体架构图和数据流向
@@ -1610,6 +1861,25 @@ declare module 'vue' {
 ---
 
 _文档生成时间：2025 年 1 月_
-_最后更新：2025 年 12 月 31 日_
+_最后更新：2026 年 1 月 2 日_
 _文件总数统计：124 个（不含空目录和资源文件）_
-_核心手敲文件：15 个 | 建议手敲：14 个 | 看懂即可：95 个_
+_核心手敲文件：17 个 | 建议手敲：12 个 | 看懂即可：95 个_
+
+---
+
+## 📝 更新日志
+
+### 2026-01-02 更新
+
+- ✅ 添加性能优化与内存泄漏修复章节
+- ✅ 更新核心文件说明，补充内存优化要点
+- ✅ 新增面试问答：内存泄漏、性能优化相关
+- ✅ 更新面试高频考点速查表
+- ✅ 新增第八阶段：右键菜单系统（TOP 5 亮点）
+- ✅ 新增 Q11、Q12 面试问答（右键菜单设计、Composables）
+- ✅ 更新学习完成检查清单，增加右键菜单相关项
+
+**相关优化文档**：
+
+- [模糊背景效果性能优化](./BLUR_EFFECT_OPTIMIZATION.md)
+- [内存泄漏修复优化](./MEMORY_LEAK_FIX.md)

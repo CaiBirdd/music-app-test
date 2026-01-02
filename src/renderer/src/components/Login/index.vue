@@ -254,8 +254,14 @@ defineExpose({
 
 <style lang="scss">
 .el-dialog.login {
-  backdrop-filter: blur(60px) saturate(210%);
+  /*
+   * backdrop-filter 性能优化:
+   * 降低blur值并添加GPU加速提示
+   */
+  backdrop-filter: blur(40px) saturate(180%);
   background-color: rgba(40, 40, 40, 0.7);
+  will-change: backdrop-filter;
+  transform: translate3d(0, 0, 0);
 
   .el-dialog__title {
     color: $text;

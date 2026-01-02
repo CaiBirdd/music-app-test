@@ -96,7 +96,11 @@ onUnmounted(() => {
 
 .context-menu {
   position: fixed;
-  backdrop-filter: blur(30px) saturate(210%);
+  /*
+   * backdrop-filter 性能优化:
+   * 右键菜单是临时元素，降低blur值减少GPU开销
+   */
+  backdrop-filter: blur(20px) saturate(180%);
   border-radius: 6px;
   overflow: hidden;
   background-color: rgba(40, 40, 40, 0.7);
@@ -108,6 +112,10 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 4px;
   font-size: 14px;
+  /* GPU加速 */
+  transform: translate3d(0, 0, 0);
+  will-change: opacity;
+  contain: layout style paint;
 }
 
 .menu-item {

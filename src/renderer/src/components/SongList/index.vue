@@ -171,10 +171,17 @@ watch(
     }
   }
 )
+/**
+ * 存储列表项的DOM引用，用于滚动定位
+ * 内存优化: 在列表更新时清理旧引用，避免累积
+ */
 const itemRefs = ref<Record<number, HTMLDivElement>>({})
 const setItemRef = (el: any, id: number) => {
   if (el) {
     itemRefs.value[id] = el.$el || el
+  } else {
+    // 元素被卸载时删除引用
+    delete itemRefs.value[id]
   }
 }
 watch(
@@ -226,6 +233,14 @@ watch(
   () => props.list,
   (val) => {
     filterList.value = val
+    // 内存优化: 列表更新时清理不再存在的项的DOM引用
+    const currentIds = new Set(val.map((item) => item.id))
+    Object.keys(itemRefs.value).forEach((key) => {
+      const id = Number(key)
+      if (!currentIds.has(id)) {
+        delete itemRefs.value[id]
+      }
+    })
   }
 )
 </script>
