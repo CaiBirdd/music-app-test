@@ -196,7 +196,8 @@
 - watch 监听图片切换
 - 触发颜色提取和背景更新
 - **性能优化**：GPU 加速（will-change、transform3d）、降低 blur 值（120px→80px）
-- **内存优化**：watch 停止句柄保存、组件卸载时清理资源
+- **休眠机制**：详情页关闭时执行轻量渲染（仅颜色提取），打开时补做完整渲染（Canvas 切图等）
+- ⚠️ **注意**：该组件通过 CSS 隐藏从不卸载，不需要 onUnmounted 清理
 
 ---
 
@@ -577,12 +578,12 @@
 
 ### 5. 其他重要文件⭐⭐⭐
 
-| 文件                      | 路径                                                       | 代码行数 | 手敲原因                          | 前置知识               |
-| ------------------------- | ---------------------------------------------------------- | -------- | --------------------------------- | ---------------------- |
-| **shortcutKey.ts**        | `src/renderer/src/utils/shortcutKey.ts`                    | ~35 行   | 全局快捷键                        | keydown 事件、keyCode  |
-| **usePlayList.ts**        | `src/renderer/src/layout/BaseAside/usePlayList.ts`         | ~90 行   | 歌单数据获取逻辑                  | 组合式函数封装         |
-| **LyricDisplay.vue**      | `src/renderer/src/components/MusicDetail/LyricDisplay.vue` | ~185 行  | 歌词展示、GSAP 封面动画、内存优化 | 先敲完 lyric/player.ts |
-| **MusicDetail/index.vue** | `src/renderer/src/components/MusicDetail/index.vue`        | ~150 行  | 音乐详情弹窗                      | 先敲完 FlowBg.vue      |
+| 文件                      | 路径                                                       | 代码行数 | 手敲原因                                        | 前置知识               |
+| ------------------------- | ---------------------------------------------------------- | -------- | ----------------------------------------------- | ---------------------- |
+| **shortcutKey.ts**        | `src/renderer/src/utils/shortcutKey.ts`                    | ~35 行   | 全局快捷键                                      | keydown 事件、keyCode  |
+| **usePlayList.ts**        | `src/renderer/src/layout/BaseAside/usePlayList.ts`         | ~90 行   | 歌单数据获取逻辑                                | 组合式函数封装         |
+| **LyricDisplay.vue**      | `src/renderer/src/components/MusicDetail/LyricDisplay.vue` | ~185 行  | 歌词展示、GSAP 封面动画、休眠机制、竞态条件处理 | 先敲完 lyric/player.ts |
+| **MusicDetail/index.vue** | `src/renderer/src/components/MusicDetail/index.vue`        | ~150 行  | 音乐详情弹窗                                    | 先敲完 FlowBg.vue      |
 
 ---
 

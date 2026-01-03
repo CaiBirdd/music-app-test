@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { colorExtraction, gradualChange, useRhythm } from '@/components/MusicDetail/useMusic'
-import { onMounted, onUnmounted, ref, watch, type WatchStopHandle } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { findBestColors, toggleImg } from '@/utils'
 import { useMusicAction } from '@/store/music'
 import { useSettings } from '@/store/settings'
+import { useFlags } from '@/store/flags'
 
 interface Props {
   bg: string
@@ -12,48 +13,89 @@ const bestColors = ref<any[]>([])
 const props = defineProps<Props>()
 const music = useMusicAction()
 const settings = useSettings()
+const flags = useFlags()
 const rgb = ref<any[]>([])
 
-// 内存优化: 保存cleanup函数和watch停止句柄，用于组件卸载时清理
-let rhythmCleanup: (() => void) | null = null
-let stopWatchBg: WatchStopHandle | null = null
+// 保存 rhythmBox 和 splitImg 引用，供唤醒时使用
+let rhythmBoxRef: HTMLDivElement | null = null
+let splitImgFn: ((img: HTMLImageElement) => void) | null = null
+
+/**
+ * 执行完整的背景渲染逻辑
+ * 包括：颜色提取、渐变背景、节律背景
+ */
+const executeFullRender = (bg: string, lyricBg: string) => {
+  toggleImg(bg, '200y200').then((img) => {
+    rgb.value = colorExtraction(img)
+    bestColors.value = findBestColors(rgb.value, 2)
+    music.updateBgColor(bestColors.value)
+    gradualChange(img, bestColors.value)
+    // 只有节律背景模式才执行 splitImg（Canvas绘图 + CSS规则插入）
+    if (lyricBg === 'rhythm' && rhythmBoxRef && splitImgFn) {
+      splitImgFn(img)
+    }
+  })
+}
+
+/**
+ * 执行轻量级渲染（仅颜色提取，给底部播放栏使用）
+ * 不执行 gradualChange 和 splitImg，避免后台GPU开销
+ */
+const executeLightRender = (bg: string) => {
+  toggleImg(bg, '200y200').then((img) => {
+    rgb.value = colorExtraction(img)
+    bestColors.value = findBestColors(rgb.value, 2)
+    music.updateBgColor(bestColors.value)
+  })
+}
 
 onMounted(() => {
-  const rhythmBox = document.querySelector('#rhythm-box') as HTMLDivElement
-  const { splitImg, cleanup } = useRhythm(rhythmBox)
-  rhythmCleanup = cleanup
+  rhythmBoxRef = document.querySelector('#rhythm-box') as HTMLDivElement
+  const { splitImg } = useRhythm(rhythmBoxRef)
+  splitImgFn = splitImg
 
   // 图片切换时，更新流动背景
-  // 保存watch停止句柄
-  stopWatchBg = watch(
+  watch(
     [() => props.bg, () => settings.state.lyricBg],
     ([bg, lyricBg]) => {
       if (!bg) {
         return
       }
-      // 使用较小的图片尺寸进行颜色提取，减少内存占用
-      toggleImg(bg, '200y200').then((img) => {
-        rgb.value = colorExtraction(img)
-        bestColors.value = findBestColors(rgb.value, 2)
-        music.updateBgColor(bestColors.value)
-        gradualChange(img, bestColors.value)
-        if (lyricBg === 'rhythm' && rhythmBox) {
-          splitImg(img)
-        }
-      })
+
+      /**
+       * 【性能优化 - 休眠机制】
+       * 问题：MusicDetail 组件使用 CSS transform 隐藏而非 v-if 销毁，
+       *       导致 onUnmounted 永不触发，后台切歌时仍执行重渲染逻辑。
+       * 解决：当详情页关闭时，只执行轻量级颜色提取（给底部栏用），
+       *       跳过 gradualChange 和 splitImg 等高开销操作。
+       */
+      if (!flags.isOpenDetail) {
+        // 详情页关闭时：仅更新颜色，不执行 Canvas/CSS/DOM 操作
+        executeLightRender(bg)
+        return
+      }
+
+      // 详情页打开时：执行完整渲染流程
+      executeFullRender(bg, lyricBg)
     },
     {
       immediate: true
     }
   )
-})
 
-// 组件卸载时清理所有资源
-onUnmounted(() => {
-  // 停止watch
-  stopWatchBg?.()
-  // 清理节律背景资源
-  rhythmCleanup?.()
+  /**
+   * 【唤醒机制】监听详情页打开状态
+   * 当用户打开详情页时，补做一次完整渲染，确保背景正确显示
+   */
+  watch(
+    () => flags.isOpenDetail,
+    (isOpen) => {
+      if (isOpen && props.bg) {
+        // 唤醒时执行完整渲染
+        executeFullRender(props.bg, settings.state.lyricBg)
+      }
+    }
+  )
 })
 </script>
 

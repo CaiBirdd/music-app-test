@@ -1,7 +1,7 @@
 ﻿<script lang="ts" setup>
 import { toggleImg } from '@/utils'
 import type { LyricLine } from '@/utils/lyric'
-import { computed, nextTick, onUnmounted, useTemplateRef, watch, type WatchStopHandle } from 'vue'
+import { computed, nextTick, useTemplateRef, watch } from 'vue'
 import gsap from 'gsap'
 import { useRouter } from 'vue-router'
 import { useFlags } from '@/store/flags'
@@ -21,17 +21,92 @@ const router = useRouter()
 const flash = useFlags()
 const videoCover = useTemplateRef<HTMLVideoElement>('videoCover')
 
-// 内存优化: 保存watch停止句柄和GSAP动画实例，便于清理
-let stopWatchPlay: WatchStopHandle | null = null
-let stopWatchBg: WatchStopHandle | null = null
+// GSAP动画实例，用于清理上一个动画防止累积
 let currentTimeline: gsap.core.Timeline | null = null
 
-nextTick(() => {
-  const bgEl = document.querySelector('.cover-container') as HTMLDivElement
-  const coverEl = document.querySelector('.img-cover') as HTMLDivElement
+// 保存 DOM 引用，供唤醒时使用
+let bgElRef: HTMLDivElement | null = null
+let coverElRef: HTMLDivElement | null = null
 
-  // 保存watch停止句柄
-  stopWatchPlay = watch(
+// 用于追踪当前加载的图片URL，防止竞态条件
+let currentLoadingBg: string | null = null
+
+/**
+ * 执行封面动画和图片加载
+ * @param val 图片URL
+ * @param immediate 是否立即显示（跳过缩小动画）
+ */
+const executeCoverAnimation = (val: string, immediate: boolean = false) => {
+  if (!bgElRef || !val) return
+
+  // 记录当前正在加载的图片URL，用于竞态条件检测
+  currentLoadingBg = val
+
+  // 清理上一个动画，防止动画累积
+  if (currentTimeline) {
+    currentTimeline.kill()
+  }
+
+  // 创建一个 GSAP 时间轴
+  currentTimeline = gsap.timeline()
+
+  if (!immediate) {
+    // 使用时间轴先缩小元素
+    currentTimeline.to(bgElRef, {
+      height: '10vh',
+      width: '10vh',
+      duration: 0.3,
+      ease: 'power1.out',
+      transformOrigin: 'center'
+    })
+  }
+
+  toggleImg(val, '600y600').then((img) => {
+    /**
+     * 【竞态条件检测】
+     * 如果异步加载完成时，currentLoadingBg 已经变了，
+     * 说明用户又切歌了，当前这次加载结果应该被丢弃
+     */
+    if (currentLoadingBg !== val) {
+      return
+    }
+
+    if (!currentTimeline) return
+
+    /**
+     * 【immediate 模式优化】
+     * 当 immediate=true 时，直接设置背景图，不依赖 GSAP 的 onStart 回调
+     * 因为 duration=0 时 onStart 的执行时机可能不稳定
+     */
+    if (immediate && coverElRef && !props.videoPlayUrl) {
+      coverElRef.style.backgroundImage = `url(${img.src})`
+      // 确保尺寸正确
+      bgElRef!.style.height = '45vh'
+      bgElRef!.style.width = '45vh'
+      return
+    }
+
+    currentTimeline.to(bgElRef, {
+      height: '45vh',
+      width: '45vh',
+      duration: 0.3,
+      ease: 'power1.out',
+      transformOrigin: 'center',
+      onStart: () => {
+        if (!props.videoPlayUrl && coverElRef) {
+          coverElRef.style.backgroundImage = `url(${img.src})`
+        }
+      }
+    })
+  })
+}
+
+nextTick(() => {
+  bgElRef = document.querySelector('.cover-container') as HTMLDivElement
+  coverElRef = document.querySelector('.img-cover') as HTMLDivElement
+
+  // 监听播放状态，控制视频封面播放/暂停
+  watch(
     () => window.$audio?.isPlay,
     (value) => {
       if (!props.videoPlayUrl) {
@@ -45,58 +120,46 @@ nextTick(() => {
     }
   )
 
-  stopWatchBg = watch(
+  watch(
     () => props.bg,
     async (val) => {
-      if (!bgEl || !val) return
+      if (!bgElRef || !val) return
 
-      // 清理上一个动画，防止动画累积
-      if (currentTimeline) {
-        currentTimeline.kill()
+      /**
+       * 【性能优化 - 休眠机制】
+       * 问题：MusicDetail 组件使用 CSS transform 隐藏而非 v-if 销毁，
+       *       导致 onUnmounted 永不触发，后台切歌时仍加载600x600大图并执行GSAP动画。
+       * 解决：当详情页关闭时，仅清理旧动画，不加载大图、不创建新动画，
+       *       等用户打开详情页时再执行渲染。
+       */
+      if (!flash.isOpenDetail) {
+        // 详情页关闭时：只清理旧动画，不执行新渲染
+        if (currentTimeline) {
+          currentTimeline.kill()
+          currentTimeline = null
+        }
+        return
       }
 
-      // 创建一个 GSAP 时间轴
-      currentTimeline = gsap.timeline()
-      // 使用时间轴先缩小元素
-      currentTimeline.to(bgEl, {
-        height: '10vh',
-        width: '10vh',
-        duration: 0.3,
-        ease: 'power1.out',
-        transformOrigin: 'center'
-      })
-
-      toggleImg(val, '600y600').then((img) => {
-        if (!currentTimeline) return
-        currentTimeline.to(bgEl, {
-          height: '45vh',
-          width: '45vh',
-          duration: 0.3,
-          ease: 'power1.out',
-          transformOrigin: 'center',
-          onStart: () => {
-            if (!props.videoPlayUrl) {
-              ;(coverEl as HTMLDivElement).style.backgroundImage = `url(${img.src})`
-            }
-          }
-        })
-      })
+      // 详情页打开时：执行完整的封面动画
+      executeCoverAnimation(val)
     },
     { immediate: true }
   )
-})
 
-// 组件卸载时清理所有资源
-onUnmounted(() => {
-  // 停止watch
-  stopWatchPlay?.()
-  stopWatchBg?.()
-
-  // 清理GSAP动画
-  if (currentTimeline) {
-    currentTimeline.kill()
-    currentTimeline = null
-  }
+  /**
+   * 【唤醒机制】监听详情页打开状态
+   * 当用户打开详情页时，补做一次封面渲染，确保图片正确显示
+   */
+  watch(
+    () => flash.isOpenDetail,
+    (isOpen) => {
+      if (isOpen && props.bg) {
+        // 唤醒时执行渲染（immediate=true 跳过缩小动画，直接显示）
+        executeCoverAnimation(props.bg, true)
+      }
+    }
+  )
 })
 const arNames = computed(() => {
   let result = ''

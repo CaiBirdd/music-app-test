@@ -529,22 +529,23 @@ $bgColor: rgb(19, 19, 26); // 全局背景色
 
 ### 24. ⭐ 内存泄漏修复与资源管理
 
-**技术栈**：Vue3 生命周期 + 定时器管理 + 事件监听清理
+**技术栈**：Vue3 生命周期 + 定时器管理 + 事件监听清理 + 休眠机制
 
 **亮点描述**：
 
 - 系统性排查并修复内存泄漏，内存占用从持续增长 1.2GB 优化到稳定 500MB
 - **定时器清理**：递归 setTimeout 在组件卸载时正确清理，避免闭包累积
-- **Watch 停止句柄**：保存 watch 返回的停止函数，`onUnmounted` 中调用
 - **GSAP 动画销毁**：切换歌曲前 `kill()` 旧的 timeline 实例
 - **数组长度限制**：播放历史 `lastIndexList` 限制最大 100 条
 - **Image 事件清理**：加载完成后手动置空 `onload`/`onerror` 处理器
 - **LyricPlayer 销毁**：实现 `destroy()` 方法清理事件监听和 DOM 引用
+- **休眠机制**：对于使用 CSS 隐藏而非 v-if 的组件（如 MusicDetail），采用"休眠"模式跳过重渲染，而非依赖 `onUnmounted`
+- **竞态条件处理**：异步图片加载时记录当前加载 URL，完成时校验防止旧图片覆盖新图片
 
 **代码示例**：
 
 ```typescript
-// 定时器清理
+// 定时器清理（适用于会卸载的组件）
 let searchDefaultTimer: ReturnType<typeof setTimeout> | null = null
 onUnmounted(() => {
   if (searchDefaultTimer) {
@@ -553,10 +554,25 @@ onUnmounted(() => {
   }
 })
 
-// Watch 停止句柄
-let stopWatchBg: WatchStopHandle | null = null
-stopWatchBg = watch(() => props.bg, handler)
-onUnmounted(() => stopWatchBg?.())
+// 休眠机制（适用于 CSS 隐藏的组件，如 FlowBg.vue）
+watch([() => props.bg, () => settings.state.lyricBg], ([bg, lyricBg]) => {
+  // 详情页关闭时只做轻量渲染，跳过 Canvas/GSAP 等重操作
+  if (!flags.isOpenDetail) {
+    executeLightRender(bg)
+    return
+  }
+  executeFullRender(bg, lyricBg)
+})
+
+// 竞态条件检测（适用于异步图片加载）
+let currentLoadingBg = ''
+const executeCoverAnimation = (val: string) => {
+  currentLoadingBg = val
+  toggleImg(val, '600y600').then((img) => {
+    if (currentLoadingBg !== val) return // 图片已变化，跳过
+    // 更新封面...
+  })
+}
 
 // 数组长度限制
 const MAX_HISTORY_LENGTH = 100
@@ -564,6 +580,8 @@ if (state.value.lastIndexList.length > MAX_HISTORY_LENGTH) {
   state.value.lastIndexList = state.value.lastIndexList.slice(-MAX_HISTORY_LENGTH)
 }
 ```
+
+> ⚠️ **重要认知**：并非所有组件都需要 `onUnmounted` 清理。使用 CSS `transform`/`visibility` 隐藏的组件永远不会卸载，应采用"休眠机制"而非生命周期清理。
 
 ---
 
@@ -716,4 +734,4 @@ const imgUrl = cutCanvas.toDataURL('image/jpeg', 0.6)
 ---
 
 _文档生成时间：2025年12月31日_
-_最后更新：补充内存泄漏修复、Canvas 对象池优化，优化 TOP 5 结构_
+_最后更新：2026年1月3日 - 补充休眠机制、竞态条件处理，说明 onUnmounted 不适用于 CSS 隐藏组件_

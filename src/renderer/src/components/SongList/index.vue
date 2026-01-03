@@ -114,7 +114,8 @@ const playHandler = async (item: GetMusicDetailData, index: number) => {
   id.value = item.id
   emit('play', item, index)
 
-  if (music.state.runtimeList?.id !== music.state.currentItem?.id && props.ids && props.listInfo) {
+  // 如果传入了listInfo和ids，总是更新runtimeList，确保当前播放列表上下文正确
+  if (props.ids && props.listInfo) {
     music.updateRuntimeList({ tracks: props.list, ...props.listInfo }, props.ids)
   }
 }

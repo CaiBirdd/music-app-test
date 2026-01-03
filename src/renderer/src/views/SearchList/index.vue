@@ -123,6 +123,8 @@ watch(
     :columns="columns"
     :songs="music.state.songs"
     :list="state.songs.result"
+    :list-info="{ id: 'search', name: '搜索结果' }"
+    :ids="state.songs.result.map((item) => item.id)"
     is-paging
     :total="state.songs.songCount"
     :page-size="limit"
@@ -131,6 +133,8 @@ watch(
     @current-change="currentChange"
     @play="music.getMusicUrlHandler"
   ></SongList>
+  <!-- 在搜索页的 SongList 传入 listInfo 和 ids，让搜索结果成为当前运行时列表，
+   播放结束会继续按这一页（最多50首）循环/随机 -->
   <!--  <tabs v-model="activeName">-->
   <!--    <tab-pane-->
   <!--      v-for="item in tabsConfig"-->
